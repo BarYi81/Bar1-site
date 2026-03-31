@@ -1,4 +1,4 @@
-/* usage.js v4 — 从出生日起算，双段汇总 */
+﻿/* usage.js v4 — 从出生日起算，双段汇总 */
 
 const U18N = {
   zh: {

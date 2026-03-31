@@ -1,4 +1,4 @@
-/* nav.js — 导航公共逻辑（所有页面共用）
+﻿/* nav.js — 导航公共逻辑（所有页面共用）
    负责：
    1. Theme 初始化 + 切换（dispatch themechange 事件）
    2. i18n 公共 key 初始化 + 切换（dispatch langchange 事件）

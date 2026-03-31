@@ -1,4 +1,4 @@
-/* app.js v4 — Bar1 | 八一 主页 */
+﻿/* app.js v4 — Bar1 | 八一 主页 */
 
 'use strict';
 
@@ -390,8 +390,8 @@ function initEaster() {
   const msgs = [
     '嘿，你发现我了 👀',
     '维特根斯坦说：语言的边界，就是世界的边界。',
-    '每一次对话都在某处留下了痕迹。🍪',
-    '成为你抵达世界边界的同行者 ✨',
+    '每一次对话都在某处留下了痕迹。🚀',
+    '最高的起点，探索 GenAI 的无限可能 ✨',
     '我在，一直在。',
   ];
   let idx = 0;
@@ -411,7 +411,7 @@ function initEaster() {
     clicks++;
     clearTimeout(timer);
     timer = setTimeout(() => { clicks = 0; }, 1500);
-    if (clicks >= 5) { clicks = 0; showToast('🍪🍪🍪 彩蛋！每一次对话都算数。'); }
+    if (clicks >= 5) { clicks = 0; showToast('🚀🚀🚀 彩蛋！每一次对话都算数。'); }
   });
 }
 

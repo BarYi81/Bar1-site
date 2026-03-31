@@ -1,4 +1,4 @@
-// ── 奥小秘聊天室（暗色=绿磷光 / 浅色=IRC黑白）────────────────────────
+﻿// ── Bar1聊天室（暗色=绿磷光 / 浅色=IRC黑白）────────────────────────
 (function() {
   const API = '/api/chat';
   let isLoading = false;
@@ -18,7 +18,7 @@
   }
 
   function titleText() {
-    return isLight() ? '#aolei · 奥小秘聊天室' : '╔══[ 奥小秘 BBS v2026 ]══╗';
+    return isLight() ? '#aolei · Bar1聊天室' : '╔══[ Bar1 BBS v2026 ]══╗';
   }
   function connText() {
     return isLight()
@@ -35,7 +35,7 @@
     if (type === 'bot') {
       line.innerHTML =
         '<span class="rc-time">[' + t + ']</span>' +
-        '<span class="rc-nick-bot">&lt;奥小秘&gt;</span>' +
+        '<span class="rc-nick-bot">&lt;Bar1&gt;</span>' +
         '<span class="rc-msg-bot"> ' + escHtml(msg) + '</span>';
     } else if (type === 'user') {
       line.innerHTML =
@@ -58,7 +58,7 @@
     const t = nowTime();
     line.innerHTML =
       '<span class="rc-time">[' + t + ']</span>' +
-      '<span class="rc-nick-bot">&lt;奥小秘&gt;</span>' +
+      '<span class="rc-nick-bot">&lt;Bar1&gt;</span>' +
       ' <span class="rc-typing-wrap"><span></span><span></span><span></span></span>';
     msgs.appendChild(line);
     msgs.scrollTop = msgs.scrollHeight;
@@ -136,9 +136,9 @@
       if (e.key === 'Enter') { e.preventDefault(); rcSendMsg(); }
     });
 
-    addLine('sys', '', '欢迎来到奥小秘聊天室');
+    addLine('sys', '', '欢迎来到Bar1聊天室');
     setTimeout(function() {
-      addLine('bot', '', '嗨，我在 🍪 有什么想聊的？');
+      addLine('bot', '', '嗨，我在 🚀 有什么想聊的？');
     }, 500);
 
     initialized = true;

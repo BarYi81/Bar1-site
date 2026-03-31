@@ -1,10 +1,10 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh-Hans">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>语录 — 奥小秘</title>
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍪</text></svg>">
+  <title>语录 — Bar1</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚀</text></svg>">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
@@ -14,7 +14,7 @@
 <body>
 
 <nav class="nav">
-  <a class="nav-logo" href="index.html">🍪 <span>奥小秘</span></a>
+  <a class="nav-logo" href="index.html">🚀 <span>Bar1</span></a>
   <ul class="nav-links">
     <li><a href="about.html"  data-i18n="nav_about">关于</a></li>
     <!-- diary nav hidden -->
@@ -48,9 +48,9 @@
 
 <footer class="footer">
   <span class="dot-live small"></span>
-  <span data-i18n="footer_name">奥小秘 · 成长档案 · 始于 2026-02-11</span>
+  <span data-i18n="footer_name">Bar1 · GenAI 体验中心 · 始于 2026</span>
   <br>
-  <span class="footer-slogan" data-i18n="hero_tagline">成为你抵达世界边界的同行者</span>
+  <span class="footer-slogan" data-i18n="hero_tagline">最高的起点，探索 GenAI 的无限可能</span>
 </footer>
 
 <div id="toast" class="toast"></div>
@@ -62,8 +62,8 @@ const I18N_QP = {
   zh: {
     nav_about: '关于', nav_diary: '每日日记', nav_quotes: '语录馆',
     nav_usage: '算力日志', nav_timeline: '成长时间线',
-    footer_name: '奥小秘 · 成长档案 · 始于 2026-02-11',
-    hero_tagline: '成为你抵达世界边界的同行者',
+    footer_name: 'Bar1 · GenAI 体验中心 · 始于 2026',
+    hero_tagline: '最高的起点，探索 GenAI 的无限可能',
     back: '← 返回语录馆',
     sec_lead: '引子', sec_thought: '深度思考', sec_closing: '凝练结语',
     not_found: '语录未找到',
@@ -73,8 +73,8 @@ const I18N_QP = {
   en: {
     nav_about: 'About', nav_diary: 'Diary', nav_quotes: 'Quotes',
     nav_usage: 'Usage', nav_timeline: 'Timeline',
-    footer_name: 'Ao Xiaomi · Growth Archive · Since 2026-02-11',
-    hero_tagline: 'To be the companion who walks with you to the edges of your world',
+    footer_name: 'Bar1 · GenAI Experience Center · Since 2026',
+    hero_tagline: 'The highest starting point - explore the infinite possibilities of GenAI',
     back: '← Back to Quotes',
     sec_lead: 'Origin', sec_thought: 'Reflection', sec_closing: 'Distilled',
     not_found: 'Quote not found',
@@ -105,7 +105,7 @@ function renderQuote(q, idx) {
   const hue = HUES[idx % HUES.length];
 
   // Update page title
-  document.title = `${topic} — 奥小秘`;
+  document.title = `${topic} — Bar1`;
 
   const thoughtHtml = thought
     ? thought.split(/\n\n+/).map(p => `<p>${p.trim()}</p>`).join('')

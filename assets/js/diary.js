@@ -1,4 +1,4 @@
-/* diary.js — 每日日记页逻辑 */
+﻿/* diary.js — 每日日记页逻辑 */
 
 (function() {
   'use strict';
@@ -29,8 +29,8 @@
       section_reflection: '反思',
       no_mistakes: '今天没有失误 ✨',
       loading: '加载中…',
-      footer_text: '奥小秘 · 成长档案 · 始于 2026-02-11',
-      footer_sub: '成为你抵达世界边界的同行者',
+      footer_text: 'Bar1 · GenAI 体验中心 · 始于 2026',
+      footer_sub: '最高的起点，探索 GenAI 的无限可能',
     },
     en: {
       nav_timeline: 'Timeline',
@@ -44,8 +44,8 @@
       section_reflection: 'Reflection',
       no_mistakes: 'No mistakes today ✨',
       loading: 'Loading…',
-      footer_text: 'Ao Xiaomi · Growth Archive · Since 2026-02-11',
-      footer_sub: 'To be the companion who walks with you to the edges of your world',
+      footer_text: 'Bar1 · GenAI Experience Center · Since 2026',
+      footer_sub: 'The highest starting point - explore the infinite possibilities of GenAI',
     }
   };
 

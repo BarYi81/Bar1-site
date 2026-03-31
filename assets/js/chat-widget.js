@@ -1,4 +1,4 @@
-// ── 奥小秘对话框 ──────────────────────────────────────────────────────
+﻿// ── Bar1对话框 ──────────────────────────────────────────────────────
 (function() {
   const API = '/api/chat';
   let nickname = '';
@@ -11,7 +11,7 @@
     if (nameRow) {
       const btn = document.createElement('button');
       btn.className = 'chat-trigger-btn';
-      btn.setAttribute('aria-label', '和奥小秘聊聊');
+      btn.setAttribute('aria-label', '和Bar1聊聊');
       btn.innerHTML = '<span class="ct-dot"></span><span>聊聊</span>';
       btn.onclick = openChat;
       nameRow.appendChild(btn);
@@ -30,9 +30,9 @@
     panel.id = 'chatPanel';
     panel.innerHTML = `
       <div class="chat-header">
-        <div class="chat-header-avatar">🍪</div>
+        <div class="chat-header-avatar">🚀</div>
         <div class="chat-header-info">
-          <div class="chat-header-name">奥小秘</div>
+          <div class="chat-header-name">Bar1</div>
           <div class="chat-header-status">● 在线</div>
         </div>
         <button class="chat-close-btn" onclick="closeChatWidget()" aria-label="关闭">×</button>
@@ -110,7 +110,7 @@
     document.getElementById('chatMessages').style.display = 'flex';
     document.getElementById('chatHint').style.display = 'block';
     document.getElementById('chatInputWrap').style.display = 'flex';
-    addBotMsg(`${nickname}，你好！我是奥小秘 🍪 很高兴认识你。可以聊聊人与AI、OpenClaw技术，或者生活、理想、远方——你有什么想说的？`);
+    addBotMsg(`${nickname}，你好！我是Bar1 🚀 很高兴认识你。可以聊聊人与AI、OpenClaw技术，或者生活、理想、远方——你有什么想说的？`);
     setTimeout(() => document.getElementById('chatInput').focus(), 100);
   };
 
