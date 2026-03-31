@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bar1 | 部署方案对比 & 安全控制</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #0b1120; --surface: rgba(255,255,255,0.03); --border: rgba(255,255,255,0.1);
+    --text: #e8ecf4; --muted: #8899aa; --gold: #F0A030; --blue: #38BDF8; --green: #34D399;
+    --mono: 'JetBrains Mono', monospace; --sans: -apple-system, 'PingFang SC', sans-serif;
+  }
+  html { scroll-behavior: smooth; }
+  body { background: var(--bg); color: var(--text); font-family: var(--sans); font-size: 16px; line-height: 1.6; }
+
+  nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; height: 56px; display: flex; align-items: center; padding: 0 40px; background: rgba(11,17,32,0.9); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); }
+  .nav-brand { font-family: var(--mono); font-size: 14px; font-weight: 700; color: var(--gold); letter-spacing: 0.05em; text-decoration: none; }
+  .nav-links { margin-left: auto; display: flex; gap: 32px; list-style: none; }
+  .nav-links a { font-family: var(--mono); font-size: 11px; letter-spacing: 0.12em; color: var(--muted); text-decoration: none; text-transform: uppercase; transition: color 0.2s; }
+  .nav-links a:hover { color: var(--gold); }
+
+  .container { max-width: 1200px; margin: 0 auto; padding: 0 40px; }
+  section { padding: 100px 0; position: relative; }
+  .section-label { font-family: var(--mono); font-size: 11px; letter-spacing: 0.2em; color: var(--gold); text-transform: uppercase; margin-bottom: 16px; display: flex; align-items: center; gap: 12px; }
+  .section-label::before { content: ''; display: inline-block; width: 24px; height: 1px; background: var(--gold); }
+  .section-title { font-size: clamp(28px, 4vw, 42px); font-weight: 700; margin-bottom: 20px; line-height: 1.3; }
+  .section-title span { color: var(--gold); }
+  .section-desc { font-size: 16px; color: var(--muted); max-width: 640px; line-height: 1.7; margin-bottom: 48px; }
+  .divider { width: 100%; height: 1px; background: linear-gradient(90deg, transparent, var(--border), transparent); }
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-brand" href="index.html">Bar1 × AWS</a>
+  <ul class="nav-links">
+    <li><a href="index.html">首页</a></li>
+    <li><a href="demo.html">Demo</a></li>
+    <li><a href="#deploy">部署对比</a></li>
+    <li><a href="#security">安全控制</a></li>
+  </ul>
+</nav>
+
+<!-- ===== SECTION 1: 部署方案对比 ===== -->
+<section id="deploy">
+  <div class="container">
+    <div class="section-label">01 · 部署方案评估</div>
+    <div class="section-title">OpenClaw <span>部署方案对比</span></div>
+    <div class="section-desc">四种部署路径，从个人体验到企业生产，选择最适合你的方案。</div>
+
+    <div style="overflow-x:auto;">
+    <table style="width:100%;border-collapse:collapse;font-size:14px;min-width:900px;">
+      <thead>
+        <tr style="border-bottom:2px solid var(--gold);">
+          <th style="text-align:left;padding:14px 12px;font-family:var(--mono);font-size:12px;color:var(--muted);letter-spacing:0.1em;width:130px;">维度</th>
+          <th style="text-align:left;padding:14px 12px;font-family:var(--mono);font-size:12px;color:var(--text);">路径 A：本地体验</th>
+          <th style="text-align:left;padding:14px 12px;font-family:var(--mono);font-size:12px;color:var(--text);">路径 B：云上快速部署</th>
+          <th style="text-align:left;padding:14px 12px;font-family:var(--mono);font-size:12px;color:var(--blue);">路径 C：自建企业级</th>
+          <th style="text-align:left;padding:14px 12px;font-family:var(--mono);font-size:12px;background:rgba(240,160,48,0.08);color:var(--gold);border-top:2px solid var(--gold);">路径 D：托管企业级</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr style="border-bottom:1px solid var(--border);">
+          <td style="padding:12px;color:var(--muted);font-family:var(--mono);font-size:12px;">角色</td>
+          <td style="padding:12px;">个人开发者</td>
+          <td style="padding:12px;">个人 / 小团队</td>
+          <td style="padding:12px;">Builder（有平台工程能力）</td>
+          <td style="padding:12px;background:rgba(240,160,48,0.04);">Builder（快速上生产）</td>
+        </tr>
+        <tr style="border-bottom:1px solid var(--border);">
+          <td style="padding:12px;color:var(--muted);font-family:var(--mono);font-size:12px;">代表方案</td>
+          <td style="padding:12px;">本地电脑直接安装</td>
+          <td style="padding:12px;">Lightsail 一键部署 / MyClaw</td>
+          <td style="padding:12px;"><span style="color:var(--blue);">EKS + 安全容器 + 监控组件</span></td>
+          <td style="padding:12px;background:rgba(240,160,48,0.04);"><span style="color:var(--gold);font-weight:600;">AgentCore</span></td>
+        </tr>
+        <tr style="border-bottom:1px solid var(--border);">
+          <td style="padding:12px;color:var(--muted);font-family:var(--mono);font-size:12px;">适用场景</td>
+          <td style="padding:12px;">试玩、学习、开发调试</td>
+          <td style="padding:12px;">个人助手、小团队试用、PoC</td>
+          <td style="padding:12px;">深度定制，对某一领域有极致需求</td>
+          <td style="padding:12px;background:rgba(240,160,48,0.04);">企业级安全治理，快速 PoC 到生产</td>
+        </tr>
+        <tr style="border-bottom:1px solid var(--border);">
+          <td style="padding:12px;color:var(--muted);font-family:var(--mono);font-size:12px;">数据主权</td>
+          <td style="padding:12px;">本地</td>
+          <td style="padding:12px;">Lightsail / MyClaw 三方托管</td>
+          <td style="padding:12px;">自己的 AWS 账户</td>
+          <td style="padding:12px;background:rgba(240,160,48,0.04);">自己的 AWS 账户</td>
+        </tr>
+        <tr style="border-bottom:1px solid var(--border);">
+          <td style="padding:12px;color:var(--muted);font-family:var(--mono);font-size:12px;">安全治理</td>
+          <td style="padding:12px;color:var(--muted);">❌ 无（22 万实例暴露在公网）</td>
+          <td style="padding:12px;">基础（单实例，无企业级治理）</td>
+          <td style="padding:12px;">全部自建（3-5 个月工程量）</td>
+          <td style="padding:12px;background:rgba(240,160,48,0.04);">✅ 内置（Identity + Policy + Gateway）</td>
+        </tr>
+        <tr style="border-bottom:1px solid var(--border);">
+          <td style="padding:12px;color:var(--muted);font-family:var(--mono);font-size:12px;">多租户隔离</td>
+          <td style="padding:12px;">单用户</td>
+          <td style="padding:12px;">每人一台实例，成本线性增长</td>
+          <td style="padding:12px;">多种隔离方案：AutoMode, MicroVMs</td>
+          <td style="padding:12px;background:rgba(240,160,48,0.04);">✅ 每用户独立 MicroVM，软件级隔离</td>
+        </tr>
+        <tr style="border-bottom:1px solid var(--border);">
+          <td style="padding:12px;color:var(--muted);font-family:var(--mono);font-size:12px;">运维</td>
+          <td style="padding:12px;">自己管</td>
+          <td style="padding:12px;">轻</td>
+          <td style="padding:12px;">重</td>
+          <td style="padding:12px;background:rgba(240,160,48,0.04);">✅ 零（全托管）</td>
+        </tr>
+        <tr style="border-bottom:1px solid var(--border);">
+          <td style="padding:12px;color:var(--muted);font-family:var(--mono);font-size:12px;">弹性</td>
+          <td style="padding:12px;color:var(--muted);">❌ 无</td>
+          <td style="padding:12px;color:var(--muted);">❌ 固定实例</td>
+          <td style="padding:12px;">需自建 auto-scaling</td>
+          <td style="padding:12px;background:rgba(240,160,48,0.04);">✅ Serverless，秒级启动</td>
+        </tr>
+        <tr style="border-bottom:1px solid var(--border);">
+          <td style="padding:12px;color:var(--muted);font-family:var(--mono);font-size:12px;">自定义空间</td>
+          <td style="padding:12px;">✅ 完全自由</td>
+          <td style="padding:12px;">低（预置配置）</td>
+          <td style="padding:12px;">✅ 最高（完全自主控制）</td>
+          <td style="padding:12px;background:rgba(240,160,48,0.04);">中（托管平台，通过配置定制）</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ===== SECTION 2: 安全控制建议 ===== -->
+<section id="security">
+  <div class="container">
+    <div class="section-label">02 · 安全控制</div>
+    <div class="section-title">安全控制<span>建议汇总</span></div>
+    <div class="section-desc">12 项安全最佳实践，覆盖从部署到运行的全生命周期。</div>
+
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px;">
+
+      <div style="border:1px solid var(--border);padding:24px;background:var(--surface);">
+        <div style="font-family:var(--mono);font-size:11px;color:var(--gold);margin-bottom:10px;">01</div>
+        <div style="font-weight:600;margin-bottom:8px;">不对外暴露 OpenClaw</div>
+        <div style="font-size:13px;color:var(--muted);line-height:1.7;">除非必须，否则仅使用 localhost。对外暴露时通过防火墙严格控制访问，添加 WAF 防护及 Ratelimit 限制，记录访问日志并监控异常。</div>
+      </div>
+
+      <div style="border:1px solid var(--border);padding:24px;background:var(--surface);">
+        <div style="font-family:var(--mono);font-size:11px;color:var(--gold);margin-bottom:10px;">02</div>
+        <div style="font-weight:600;margin-bottom:8px;">定期扫描并修复漏洞</div>
+        <div style="font-size:13px;color:var(--muted);line-height:1.7;">扫描 Host 的漏洞并及时安装更新补丁，定期升级 OpenClaw 版本。不使用非官方来源的安装包或升级包。</div>
+      </div>
+
+      <div style="border:1px solid var(--border);padding:24px;background:var(--surface);">
+        <div style="font-family:var(--mono);font-size:11px;color:var(--gold);margin-bottom:10px;">03</div>
+        <div style="font-weight:600;margin-bottom:8px;">使用隔离的环境运行</div>
+        <div style="font-size:13px;color:var(--muted);line-height:1.7;">将 OpenClaw 部署在独立的虚拟机中，通过 VPC 限制可访问的网络及域名，让 OpenClaw 仅在沙箱功能运行 Tool。</div>
+      </div>
+
+      <div style="border:1px solid var(--border);padding:24px;background:var(--surface);">
+        <div style="font-family:var(--mono);font-size:11px;color:var(--gold);margin-bottom:10px;">04</div>
+        <div style="font-weight:600;margin-bottom:8px;">谨慎安装 Skills</div>
+        <div style="font-size:13px;color:var(--muted);line-height:1.7;">仅使用可信来源的 Skills，检查 Skills 的安全性和影响。企业应维护自己的 Skills 仓库并审查后再入库，在沙箱中运行并分析执行行为。</div>
+      </div>
+
+      <div style="border:1px solid var(--border);padding:24px;background:var(--surface);">
+        <div style="font-family:var(--mono);font-size:11px;color:var(--gold);margin-bottom:10px;">05</div>
+        <div style="font-weight:600;margin-bottom:8px;">谨慎处理外部数据</div>
+        <div style="font-size:13px;color:var(--muted);line-height:1.7;">尽可能只访问内部系统及数据，避免访问防火墙外部的系统及数据。对外暴露时记录访问日志并监控异常。</div>
+      </div>
+
+      <div style="border:1px solid var(--border);padding:24px;background:var(--surface);">
+        <div style="font-family:var(--mono);font-size:11px;color:var(--gold);margin-bottom:10px;">06</div>
+        <div style="font-weight:600;margin-bottom:8px;">仅授予最小权限</div>
+        <div style="font-size:13px;color:var(--muted);line-height:1.7;">使用非 Root 用户运行，通过 tools.allow/deny 仅允许调用所需的 Tool。仅授予必要的外部系统权限，对于敏感操作在 OpenClaw 外部实现人工确认机制。</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section style="padding-top:0;">
+  <div class="container">
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px;">
+
+      <div style="border:1px solid var(--border);padding:24px;background:var(--surface);">
+        <div style="font-family:var(--mono);font-size:11px;color:var(--gold);margin-bottom:10px;">07</div>
+        <div style="font-weight:600;margin-bottom:8px;">检查不安全的配置</div>
+        <div style="font-size:13px;color:var(--muted);line-height:1.7;">从最小配置集开始，修改后执行 openclaw security audit 命令检查不安全的配置。对配置文件进行完整性监控。</div>
+      </div>
+
+      <div style="border:1px solid var(--border);padding:24px;background:var(--surface);">
+        <div style="font-family:var(--mono);font-size:11px;color:var(--gold);margin-bottom:10px;">08</div>
+        <div style="font-weight:600;margin-bottom:8px;">安全管理密钥</div>
+        <div style="font-size:13px;color:var(--muted);line-height:1.7;">为 OpenClaw 所使用的凭据添加 IP 限制，降低凭据丢失的影响。使用 Secrets Manager 安全存储密钥，走轮转机制。保护 .openclaw 目录，仅允许 OpenClaw 用户读写。</div>
+      </div>
+
+      <div style="border:1px solid var(--border);padding:24px;background:var(--surface);">
+        <div style="font-family:var(--mono);font-size:11px;color:var(--gold);margin-bottom:10px;">09</div>
+        <div style="font-weight:600;margin-bottom:8px;">使用身份委托避免越权访问</div>
+        <div style="font-size:13px;color:var(--muted);line-height:1.7;">OpenClaw 访问外部系统时应传播用户身份，使用最终用户的身份访问外部系统。若 OpenClaw 被授予了代身份访问外部系统的权限，应为 OpenClaw 的访问设置独立控制，避免通过此类权限提升。</div>
+      </div>
+
+      <div style="border:1px solid var(--border);padding:24px;background:var(--surface);">
+        <div style="font-family:var(--mono);font-size:11px;color:var(--gold);margin-bottom:10px;">10</div>
+        <div style="font-weight:600;margin-bottom:8px;">部署运行时安全监控</div>
+        <div style="font-size:13px;color:var(--muted);line-height:1.7;">部署终端安全工具（如 GuardDuty）监控 Host 安全事件，对异常行为及时告警。添加安全事件的自动化响应，例如自动隔离 Host 的网络。</div>
+      </div>
+
+      <div style="border:1px solid var(--border);padding:24px;background:var(--surface);">
+        <div style="font-family:var(--mono);font-size:11px;color:var(--gold);margin-bottom:10px;">11</div>
+        <div style="font-weight:600;margin-bottom:8px;">维护 Agent 资产并监控未授权安装</div>
+        <div style="font-size:13px;color:var(--muted);line-height:1.7;">扫描主机是否有监听 OpenClaw 常用端口（如 18789），扫描主机是否存在 .openclaw 目录，及时记录合规的 Agent 并清理未经批准的安装。</div>
+      </div>
+
+      <div style="border:1px solid var(--border);padding:24px;background:var(--surface);">
+        <div style="font-family:var(--mono);font-size:11px;color:var(--gold);margin-bottom:10px;">12</div>
+        <div style="font-weight:600;margin-bottom:8px;">将 AI Agent 纳入信息安全治理体系</div>
+        <div style="font-size:13px;color:var(--muted);line-height:1.7;">制定 AI Agent 相关安全策略，标准和流程。将 AI Agent 常见风险纳入安全意识培训，对你公司允许使用的 AI 网站或工具做防火墙和终端安全工具进行封控。</div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<footer style="border-top:1px solid var(--border);padding:40px 0;text-align:center;">
+  <div style="font-family:var(--mono);font-size:20px;font-weight:700;color:var(--gold);margin-bottom:12px;">Bar1 | 八一</div>
+  <div style="font-family:var(--mono);font-size:11px;color:var(--muted);letter-spacing:0.1em;">最高的起点 · Powered by OpenClaw + AWS</div>
+</footer>
+
+</body>
+</html>
