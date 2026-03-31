@@ -20,28 +20,28 @@
 }
 
 /* ══════════════════════════════════════════
-   暗色模式：绿磷光屏 (default)
+   暗色模式：蓝色科技屏 (Bar1 style)
 ══════════════════════════════════════════ */
 :root {
-  --rc-bg:         #000;
-  --rc-bg2:        #000a00;
-  --rc-bg3:        #001a00;
-  --rc-border:     #00cc33;
-  --rc-border2:    #003300;
-  --rc-title-bg:   #001a00;
-  --rc-conn-bg:    #000a00;
-  --rc-conn-color: #006600;
-  --rc-sys:        #004400;
-  --rc-time:       #005500;
-  --rc-nick-bot:   #00ff41;
-  --rc-nick-usr:   #33ff99;
-  --rc-msg-bot:    #00cc33;
-  --rc-msg-usr:    #7fffb0;
-  --rc-input-bg:   #000500;
-  --rc-prompt:     #00ff41;
-  --rc-cursor:     #00ff41;
-  --rc-hint:       #003300;
-  --rc-hint-bg:    #000a00;
+  --rc-bg:         #060d1a;
+  --rc-bg2:        #0a1225;
+  --rc-bg3:        #0e1a30;
+  --rc-border:     #38BDF8;
+  --rc-border2:    #1a3050;
+  --rc-title-bg:   #0a1225;
+  --rc-conn-bg:    #060d1a;
+  --rc-conn-color: #2a5080;
+  --rc-sys:        #2a5080;
+  --rc-time:       #3a6090;
+  --rc-nick-bot:   #38BDF8;
+  --rc-nick-usr:   #F0A030;
+  --rc-msg-bot:    #60a5fa;
+  --rc-msg-usr:    #fbbf24;
+  --rc-input-bg:   #080e1c;
+  --rc-prompt:     #38BDF8;
+  --rc-cursor:     #38BDF8;
+  --rc-hint:       #1a3050;
+  --rc-hint-bg:    #0a1225;
   --rc-scan:       rgba(0,0,0,0.12);
 }
 

@@ -1,30 +1,30 @@
 /* ================================================================
-   aolei.org — style.css v4 (全新干净版)
+   Bar1 | 八一 — style.css (based on aolei.org, restyled)
    ================================================================ */
 
 :root {
-  --bg:       #0a0a1a;
-  --bg2:      #0f0f28;
-  --surface:  rgba(255,255,255,0.04);
-  --border:   rgba(255,255,255,0.08);
-  --text:     #e8e8f0;
-  --muted:    #888;
-  --faint:    #444;
-  --orange:   #FF6B35;
-  --cyan:     #00E5CC;
-  --purple:   #A78BFA;
+  --bg:       #0b1120;
+  --bg2:      #0e1a30;
+  --surface:  rgba(255,255,255,0.05);
+  --border:   rgba(255,255,255,0.1);
+  --text:     #e8ecf4;
+  --muted:    #8899aa;
+  --faint:    #445566;
+  --orange:   #F0A030;
+  --cyan:     #38BDF8;
+  --purple:   #818CF8;
   --mono:     'JetBrains Mono', monospace;
   --section-title-gap: 32px;
 }
 
 body.light {
-  --bg:     #f0f0f5;
-  --bg2:    #e5e5ee;
-  --surface: rgba(0,0,0,0.04);
-  --border: rgba(0,0,0,0.1);
-  --text:   #1a1a2e;
-  --muted:  #666;
-  --faint:  #bbb;
+  --bg:     #f5f7fa;
+  --bg2:    #ebeef5;
+  --surface: rgba(0,0,0,0.03);
+  --border: rgba(0,0,0,0.08);
+  --text:   #1a2030;
+  --muted:  #556677;
+  --faint:  #aabbcc;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -46,11 +46,11 @@ body {
   height: 52px;
   display: flex; align-items: center; gap: 20px;
   padding: 0 28px;
-  background: rgba(10,10,26,0.9);
+  background: rgba(11,17,32,0.92);
   backdrop-filter: blur(14px);
   border-bottom: 1px solid var(--border);
 }
-body.light .nav { background: rgba(240,240,245,0.92); }
+body.light .nav { background: rgba(245,247,250,0.94); }
 
 .nav-logo {
   font-family: var(--mono);
@@ -144,7 +144,7 @@ body.light .nav { background: rgba(240,240,245,0.92); }
   flex-direction: column;
   align-items: center;
   padding: 72px 40px 48px;
-  background: linear-gradient(160deg, var(--bg) 60%, rgba(255,107,53,0.04) 100%);
+  background: linear-gradient(160deg, var(--bg) 40%, rgba(56,189,248,0.06) 70%, rgba(240,160,48,0.04) 100%);
   border-bottom: 1px solid var(--border);
   gap: 40px;
 }
