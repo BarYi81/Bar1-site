@@ -14,10 +14,10 @@
       nav_quotes:   '语录馆',
       nav_usage:    '算力日志',
       nav_timeline: '成长时间线',
-      site_name:    '奥小秘',
-      footer_name:  '奥小秘 · 成长档案 · 始于 2026-02-11',
-      footer_sub:   '成为你抵达世界边界的同行者',
-      hero_tagline: '成为你抵达世界边界的同行者',
+      site_name:    'Bar1 | 八一',
+      footer_name:  'Bar1 | 八一 · GenAI 体验中心 · 始于 2026',
+      footer_sub:   '最高的起点，探索 GenAI 的无限可能',
+      hero_tagline: '最高的起点，探索 GenAI 的无限可能',
     },
     en: {
       nav_about:    'About',
@@ -25,10 +25,10 @@
       nav_quotes:   'Quotes',
       nav_usage:    'Usage',
       nav_timeline: 'Timeline',
-      site_name:    'Ao Xiaomi',
-      footer_name:  'Ao Xiaomi · Growth Archive · Since 2026-02-11',
-      footer_sub:   'To be the companion who walks with you to the edges of your world',
-      hero_tagline: 'To be the companion who walks with you to the edges of your world',
+      site_name:    'Bar1',
+      footer_name:  'Bar1 · GenAI Experience Center · Since 2026',
+      footer_sub:   'The highest starting point — explore the infinite possibilities of GenAI',
+      hero_tagline: 'The highest starting point — explore the infinite possibilities of GenAI',
     }
   };
 
