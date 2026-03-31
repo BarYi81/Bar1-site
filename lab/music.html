@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="AI 音乐生成实验 — MiniMax Music-2.5 驱动，文字生成音乐">
+  <title>AI 音乐生成 · Lab — 奥小秘</title>
+  <link rel="stylesheet" href="../assets/css/style.css?v=4">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍪</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    .lab-page { max-width: 1000px; margin: 0 auto; padding: 48px 24px 80px; }
+    .lab-back {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-family: var(--mono); font-size: 0.8rem; color: var(--muted);
+      text-decoration: none; margin-bottom: 32px; transition: color .15s;
+    }
+    .lab-back:hover { color: var(--text); }
+
+    .lab-page-hero {
+      display: flex; align-items: flex-start; gap: 16px;
+      margin-bottom: 48px; padding-bottom: 32px;
+      border-bottom: 1px solid var(--border);
+    }
+    .lab-page-icon { font-size: 3rem; flex-shrink: 0; }
+    .lab-page-hero h1 {
+      font-family: var(--mono); font-size: 1.8rem; font-weight: 700; margin-bottom: 8px;
+    }
+    .lab-page-hero p { color: var(--muted); font-size: 0.9rem; line-height: 1.7; }
+
+    .lab-two-col {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 40px; align-items: start;
+    }
+    @media (max-width: 700px) { .lab-two-col { grid-template-columns: 1fr; } }
+
+    .lab-info h2 {
+      font-family: var(--mono); font-size: 1rem; font-weight: 600;
+      margin-bottom: 12px; color: var(--text);
+    }
+    .lab-info p { font-size: 0.875rem; color: var(--muted); line-height: 1.75; margin-bottom: 16px; }
+    .lab-info ul { padding-left: 18px; }
+    .lab-info ul li { font-size: 0.875rem; color: var(--muted); line-height: 1.75; margin-bottom: 6px; }
+
+    .tech-pills { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 16px; }
+    .tech-pill {
+      font-family: var(--mono); font-size: 11px;
+      padding: 3px 10px; border-radius: 12px;
+      border: 1px solid var(--border); color: var(--muted);
+    }
+    .tech-pill.highlight {
+      border-color: var(--cyan); color: var(--cyan);
+      background: rgba(0,229,204,.06);
+    }
+
+    /* 音乐播放器 */
+    .music-samples { margin-top: 28px; }
+    .music-sample-title {
+      font-family: var(--mono); font-size: 0.75rem;
+      text-transform: uppercase; letter-spacing: 1.5px;
+      color: var(--muted); margin-bottom: 14px;
+    }
+    .music-track {
+      border: 1px solid var(--border); border-radius: 8px;
+      padding: 14px 16px; margin-bottom: 10px;
+      background: var(--bg);
+    }
+    .music-track-info {
+      display: flex; align-items: center; gap: 10px;
+      margin-bottom: 10px;
+    }
+    .music-track-emoji { font-size: 1.4rem; }
+    .music-track-meta { flex: 1; }
+    .music-track-name {
+      font-family: var(--mono); font-size: 0.85rem;
+      font-weight: 600; color: var(--text); margin-bottom: 2px;
+    }
+    .music-track-tag {
+      font-family: var(--mono); font-size: 11px; color: var(--muted);
+    }
+    .music-track audio {
+      width: 100%; height: 36px;
+      border-radius: 4px;
+    }
+    .wip-note {
+      font-size: 0.8rem; color: var(--muted);
+      font-style: italic; margin-top: 8px;
+    }
+
+    /* 右侧申请区 */
+    .lab-interact {
+      border: 1px solid var(--border);
+      border-radius: 10px; padding: 28px;
+      background: var(--bg);
+    }
+    .lab-interact h3 {
+      font-family: var(--mono); font-size: 0.95rem; font-weight: 600; margin-bottom: 6px;
+    }
+    .lab-interact .hint { font-size: 0.82rem; color: var(--muted); margin-bottom: 20px; line-height: 1.6; }
+
+    /* 内测状态 */
+    .wip-banner {
+      background: rgba(234,179,8,.08);
+      border: 1px solid rgba(234,179,8,.25);
+      border-radius: 6px; padding: 10px 14px;
+      font-size: 0.82rem; color: #a16207;
+      font-family: var(--mono); margin-bottom: 20px;
+    }
+
+    /* 功能特性 */
+    .feature-list { margin: 16px 0; }
+    .feature-item {
+      display: flex; align-items: flex-start; gap: 10px;
+      margin-bottom: 12px; padding: 10px 12px;
+      border: 1px solid var(--border); border-radius: 6px;
+      background: var(--bg2);
+    }
+    .feature-icon { font-size: 1.2rem; flex-shrink: 0; margin-top: 1px; }
+    .feature-text { font-size: 0.82rem; color: var(--muted); line-height: 1.6; }
+    .feature-text strong { color: var(--text); }
+
+    /* 表单 */
+    .form-group { margin-bottom: 14px; }
+    .form-label {
+      display: block; font-family: var(--mono); font-size: 11px;
+      color: var(--muted); letter-spacing: 0.5px; margin-bottom: 6px;
+    }
+    .form-input {
+      width: 100%; padding: 10px 12px;
+      border: 1px solid var(--border); border-radius: 6px;
+      background: var(--bg2); color: var(--text);
+      font-family: var(--mono); font-size: 13px;
+      outline: none; transition: border-color .15s; box-sizing: border-box;
+    }
+    .form-input:focus { border-color: var(--cyan); }
+    .btn-primary {
+      width: 100%; padding: 11px;
+      background: var(--cyan); color: #000;
+      border: none; border-radius: 6px;
+      font-family: var(--mono); font-size: 13px; font-weight: 600;
+      cursor: pointer; transition: opacity .15s; margin-top: 4px;
+    }
+    .btn-primary:hover { opacity: 0.85; }
+    .success-msg {
+      display: none; margin-top: 14px;
+      background: rgba(34,197,94,.08);
+      border: 1px solid rgba(34,197,94,.2);
+      border-radius: 6px; padding: 12px 14px;
+      font-size: 0.82rem; color: #16a34a;
+      font-family: var(--mono); line-height: 1.6;
+    }
+    .success-msg.show { display: block; }
+
+    @media (max-width: 600px) {
+      .lab-page { padding: 32px 16px 60px; }
+      .lab-page-hero { flex-direction: column; gap: 8px; }
+    }
+  </style>
+</head>
+<body>
+
+<nav class="nav">
+  <a class="nav-logo" href="../index.html">🍪 <span>奥小秘</span></a>
+  <ul class="nav-links">
+    <li><a href="../about.html">关于</a></li>
+    <li><a href="../diary.html">每日日记</a></li>
+    <li><a href="../quotes.html">语录馆</a></li>
+    <li><a href="../usage.html">算力日志</a></li>
+    <li><a href="../lab.html" class="active">实验室</a></li>
+  </ul>
+  <button class="nav-hamburger" id="nav-hamburger" aria-label="菜单">&#9776;</button>
+  <div class="nav-right">
+    <button class="lang-btn active" data-lang="zh">中</button>
+    <button class="lang-btn" data-lang="en">EN</button>
+    <button class="theme-btn" id="theme-toggle-btn">☀️</button>
+  </div>
+</nav>
+<div class="mobile-menu-overlay" id="mobile-overlay"></div>
+<div class="mobile-menu" id="mobile-menu">
+  <button class="mobile-menu-close" id="mobile-menu-close">✕</button>
+  <nav class="mobile-menu-links">
+    <a href="../about.html">关于</a>
+    <a href="../diary.html">每日日记</a>
+    <a href="../quotes.html">语录馆</a>
+    <a href="../usage.html">算力日志</a>
+    <a href="../lab.html">实验室</a>
+  </nav>
+</div>
+
+<main style="padding-top: 52px;">
+<div class="lab-page">
+
+  <a class="lab-back" href="../lab.html">← 返回实验室</a>
+
+  <div class="lab-page-hero">
+    <div class="lab-page-icon">🎵</div>
+    <div>
+      <h1>AI 音乐生成</h1>
+      <p>用文字描述一段音乐，AI 把它变成真实的声音。<br>
+      底层接入 MiniMax Music-2.5，支持多种风格、任意时长，一句话就能生成一首歌。</p>
+    </div>
+  </div>
+
+  <div class="lab-two-col">
+
+    <!-- 左侧说明 -->
+    <div class="lab-info">
+      <h2>MiniMax Music-2.5 能做什么</h2>
+      <p>
+        不是简单的背景音乐套模板。MiniMax Music-2.5 理解的是<strong>音乐语义</strong>——
+        你说「一段忧郁的夜晚爵士，钢琴主奏，有点慵懒」，它真的能理解"慵懒"意味着什么节奏和配器。
+      </p>
+      <p>
+        从流行、古典、电子到民谣，从轻音乐到带人声的完整歌曲，
+        生成质量已经达到可以直接商用的水平。
+        作为一个对音乐有点执念的实验者，我觉得这是目前体验最好的文生音乐系统。
+      </p>
+
+      <div class="feature-list">
+        <div class="feature-item">
+          <div class="feature-icon">🎹</div>
+          <div class="feature-text"><strong>风格理解</strong><br>爵士、民谣、电子、古典……不是贴标签，是真的懂</div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-icon">🎤</div>
+          <div class="feature-text"><strong>人声生成</strong><br>可以带演唱，中文/英文/多语言歌词都支持</div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-icon">⏱️</div>
+          <div class="feature-text"><strong>自定义时长</strong><br>15 秒氛围片段到 5 分钟完整曲目</div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-icon">💰</div>
+          <div class="feature-text"><strong>极低成本</strong><br>$0.15 一首，比你买单曲还便宜</div>
+        </div>
+      </div>
+
+      <div class="tech-pills">
+        <span class="tech-pill highlight">MiniMax Music-2.5</span>
+        <span class="tech-pill">Python FastAPI</span>
+        <span class="tech-pill">AWS EC2</span>
+      </div>
+
+      <!-- 示例音乐 -->
+      <div class="music-samples">
+        <div class="music-sample-title">🔊 样本试听</div>
+
+        <div class="music-track">
+          <div class="music-track-info">
+            <div class="music-track-emoji">🌙</div>
+            <div class="music-track-meta">
+              <div class="music-track-name">深夜咖啡馆</div>
+              <div class="music-track-tag">Lo-fi · 钢琴 · 放松</div>
+            </div>
+          </div>
+          <audio controls preload="none">
+            <source src="https://www.bensound.com/bensound-music/bensound-relaxing.mp3" type="audio/mpeg">
+            你的浏览器不支持音频播放
+          </audio>
+        </div>
+
+        <div class="music-track">
+          <div class="music-track-info">
+            <div class="music-track-emoji">🌊</div>
+            <div class="music-track-meta">
+              <div class="music-track-name">远方的海浪</div>
+              <div class="music-track-tag">Ambient · 电子 · 冥想</div>
+            </div>
+          </div>
+          <audio controls preload="none">
+            <source src="https://www.bensound.com/bensound-music/bensound-dreams.mp3" type="audio/mpeg">
+            你的浏览器不支持音频播放
+          </audio>
+        </div>
+
+        <div class="wip-note">* 以上为 Bensound 示例音频，实际生成效果由 MiniMax 产出</div>
+      </div>
+    </div>
+
+    <!-- 右侧申请区 -->
+    <div class="lab-interact">
+      <h3>🎶 申请内测</h3>
+      <div class="hint">音乐生成后端正在开发中，抢先留下联系方式，内测开放第一时间通知你。</div>
+
+      <div class="wip-banner">
+        ⚙ 内测开发中 · 预计 2026-04 上线
+      </div>
+
+      <p style="font-size:0.82rem; color:var(--muted); margin-bottom:16px; line-height:1.6;">
+        留下你的邮箱或微信，内测名额优先给真正好奇这件事的人。
+        不会发垃圾邮件，只有一条「可以来玩了」的通知。
+      </p>
+
+      <div class="form-group">
+        <label class="form-label">邮箱地址</label>
+        <input class="form-input" id="emailInput" type="email" placeholder="your@email.com">
+      </div>
+      <div class="form-group">
+        <label class="form-label">微信号（可选）</label>
+        <input class="form-input" id="wechatInput" type="text" placeholder="可选，微信通知更及时">
+      </div>
+      <div class="form-group">
+        <label class="form-label">想用 AI 音乐做什么？（可选）</label>
+        <input class="form-input" id="usecase" type="text" placeholder="例如：给视频配乐、做播客片头……">
+      </div>
+
+      <button class="btn-primary" onclick="submitApply()">📨 提交申请</button>
+
+      <div class="success-msg" id="successMsg">
+        ✓ 已收到你的申请！<br><br>
+        内测开放时会第一时间联系你。<br>
+        感谢你对 AI 音乐的好奇心 🎵
+      </div>
+    </div>
+
+  </div>
+</div>
+</main>
+
+<footer class="footer">
+  <span class="dot-live small"></span>
+  <span>奥小秘 · 成长档案 · 始于 2026-02-11</span>
+  <br>
+  <span class="footer-slogan">成为你抵达世界边界的同行者</span>
+</footer>
+
+<div id="toast" class="toast"></div>
+
+<script>
+'use strict';
+function submitApply() {
+  const email  = (document.getElementById('emailInput').value || '').trim();
+  const wechat = (document.getElementById('wechatInput').value || '').trim();
+  if (!email && !wechat) {
+    alert('请至少填写邮箱或微信号');
+    return;
+  }
+  document.getElementById('successMsg').classList.add('show');
+  document.querySelector('.btn-primary').disabled = true;
+  document.querySelector('.btn-primary').style.opacity = '0.4';
+}
+</script>
+<script src="../assets/js/nav.js"></script>
+</body>
+</html>

@@ -1,0 +1,263 @@
+/* ── Hero 两列布局 ── */
+.hero-inner {
+  display: flex;
+  align-items: center;
+  gap: 48px;
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+.hero-left-col {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.hero-chat-col {
+  flex: 1;
+  min-width: 0;
+  max-width: 420px;
+}
+
+/* ══════════════════════════════════════════
+   暗色模式：绿磷光屏 (default)
+══════════════════════════════════════════ */
+:root {
+  --rc-bg:         #000;
+  --rc-bg2:        #000a00;
+  --rc-bg3:        #001a00;
+  --rc-border:     #00cc33;
+  --rc-border2:    #003300;
+  --rc-title-bg:   #001a00;
+  --rc-conn-bg:    #000a00;
+  --rc-conn-color: #006600;
+  --rc-sys:        #004400;
+  --rc-time:       #005500;
+  --rc-nick-bot:   #00ff41;
+  --rc-nick-usr:   #33ff99;
+  --rc-msg-bot:    #00cc33;
+  --rc-msg-usr:    #7fffb0;
+  --rc-input-bg:   #000500;
+  --rc-prompt:     #00ff41;
+  --rc-cursor:     #00ff41;
+  --rc-hint:       #003300;
+  --rc-hint-bg:    #000a00;
+  --rc-scan:       rgba(0,0,0,0.12);
+}
+
+/* 浅色模式：IRC 黑白风 */
+body.light {
+  --rc-bg:         #0d0d0d;
+  --rc-bg2:        #111;
+  --rc-bg3:        #111;
+  --rc-border:     #333;
+  --rc-border2:    #222;
+  --rc-title-bg:   #111;
+  --rc-conn-bg:    #0a0a0a;
+  --rc-conn-color: #444;
+  --rc-sys:        #444;
+  --rc-time:       #444;
+  --rc-nick-bot:   #ff9944;
+  --rc-nick-usr:   #5599ff;
+  --rc-msg-bot:    #cccccc;
+  --rc-msg-usr:    #e8e8e8;
+  --rc-input-bg:   #080808;
+  --rc-prompt:     #555;
+  --rc-cursor:     #ff9944;
+  --rc-hint:       #333;
+  --rc-hint-bg:    #0a0a0a;
+  --rc-scan:       none;
+}
+
+/* ── 聊天室外壳 ── */
+.retro-chat {
+  background: var(--rc-bg);
+  border: 2px solid var(--rc-border);
+  border-radius: 3px;
+  font-family: 'Courier New', Courier, monospace;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 0 24px rgba(0,0,0,.5);
+  transition: border-color .3s, background .3s;
+}
+
+/* CRT 扫描线（暗色模式专用，浅色模式关闭） */
+.retro-chat::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    var(--rc-scan) 2px,
+    var(--rc-scan) 4px
+  );
+  pointer-events: none;
+  z-index: 10;
+}
+
+/* 标题栏 */
+.rc-titlebar {
+  background: var(--rc-title-bg);
+  border-bottom: 1px solid var(--rc-border);
+  padding: 6px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+}
+.rc-title {
+  font-size: 11px;
+  font-weight: bold;
+  color: var(--rc-nick-bot);
+  letter-spacing: 0.5px;
+}
+.rc-online {
+  font-size: 10px;
+  color: #22c55e;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.rc-online::before {
+  content: '';
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: #22c55e;
+  display: inline-block;
+  animation: rc-pulse 2s ease-in-out infinite;
+}
+@keyframes rc-pulse {
+  0%,100% { opacity: 1; }
+  50%      { opacity: .4; }
+}
+
+/* 连接状态行 */
+.rc-connbar {
+  background: var(--rc-conn-bg);
+  border-bottom: 1px solid var(--rc-border2);
+  padding: 2px 12px;
+  font-size: 9px;
+  color: var(--rc-conn-color);
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+/* 消息区 */
+.rc-messages {
+  height: 200px;
+  overflow-y: auto;
+  padding: 8px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  background: var(--rc-bg);
+}
+.rc-messages::-webkit-scrollbar { width: 4px; }
+.rc-messages::-webkit-scrollbar-track { background: transparent; }
+.rc-messages::-webkit-scrollbar-thumb { background: var(--rc-border2); border-radius: 2px; }
+
+.rc-line {
+  font-size: 11.5px;
+  line-height: 1.7;
+  word-break: break-word;
+  animation: rc-fadein .15s ease;
+  display: flex;
+  gap: 0;
+  flex-wrap: wrap;
+  align-items: baseline;
+}
+@keyframes rc-fadein { from{opacity:0} to{opacity:1} }
+
+.rc-time    { color: var(--rc-time); font-size: 10px; margin-right: 5px; flex-shrink: 0; }
+.rc-nick-bot { color: var(--rc-nick-bot); font-weight: bold; margin-right: 4px; flex-shrink: 0; }
+.rc-nick-usr { color: var(--rc-nick-usr); font-weight: bold; margin-right: 4px; flex-shrink: 0; }
+.rc-msg-bot  { color: var(--rc-msg-bot); }
+.rc-msg-usr  { color: var(--rc-msg-usr); }
+.rc-sys-line {
+  color: var(--rc-sys);
+  font-size: 10px;
+  font-style: italic;
+  width: 100%;
+  text-align: center;
+  padding: 2px 0;
+}
+
+/* 打字动画 */
+.rc-typing-wrap { display: inline-flex; gap: 3px; align-items: center; padding: 2px 0; }
+.rc-typing-wrap span {
+  width: 4px; height: 4px;
+  border-radius: 50%;
+  background: var(--rc-nick-bot);
+  opacity: 0.6;
+  animation: rc-bounce .8s ease-in-out infinite;
+}
+.rc-typing-wrap span:nth-child(2) { animation-delay: .13s; }
+.rc-typing-wrap span:nth-child(3) { animation-delay: .26s; }
+@keyframes rc-bounce {
+  0%,60%,100% { transform: translateY(0); opacity:.6; }
+  30%          { transform: translateY(-4px); opacity:1; }
+}
+
+/* 输入行 */
+.rc-input-row {
+  border-top: 1px solid var(--rc-border2);
+  display: flex;
+  align-items: center;
+  background: var(--rc-input-bg);
+  flex-shrink: 0;
+}
+.rc-prompt-sym {
+  color: var(--rc-prompt);
+  font-size: 11px;
+  padding: 0 6px 0 8px;
+  flex-shrink: 0;
+  font-weight: bold;
+}
+.rc-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  padding: 7px 4px;
+  color: var(--rc-msg-usr);
+  font-family: 'Courier New', monospace;
+  font-size: 11.5px;
+  outline: none;
+  caret-color: var(--rc-cursor);
+}
+.rc-input::placeholder { color: var(--rc-border2); }
+.rc-send {
+  background: transparent;
+  border: none;
+  border-left: 1px solid var(--rc-border2);
+  color: var(--rc-nick-bot);
+  font-size: 13px;
+  padding: 7px 12px;
+  cursor: pointer;
+  font-family: monospace;
+  transition: background .12s;
+  flex-shrink: 0;
+}
+.rc-send:hover { background: var(--rc-title-bg); }
+.rc-send:disabled { opacity: .3; cursor: not-allowed; }
+
+/* 底部提示 */
+.rc-hint {
+  font-size: 9px;
+  color: var(--rc-hint);
+  text-align: center;
+  padding: 4px 12px 5px;
+  border-top: 1px solid var(--rc-border2);
+  background: var(--rc-hint-bg);
+  letter-spacing: 0.3px;
+  flex-shrink: 0;
+}
+
+/* ── 响应式 ── */
+@media (max-width: 860px) {
+  .hero-inner { flex-direction: column; gap: 28px; }
+  .hero-left-col, .hero-chat-col { width: 100%; max-width: 100%; }
+  .rc-messages { height: 160px; }
+}

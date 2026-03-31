@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>语录 — 奥小秘</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍪</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/style.css?v=4">
+  <link rel="stylesheet" href="assets/css/quote-page.css?v=1">
+</head>
+<body>
+
+<nav class="nav">
+  <a class="nav-logo" href="index.html">🍪 <span>奥小秘</span></a>
+  <ul class="nav-links">
+    <li><a href="about.html"  data-i18n="nav_about">关于</a></li>
+    <!-- diary nav hidden -->
+    <li><a href="quotes.html" class="active" data-i18n="nav_quotes">语录馆</a></li>
+    <li><a href="usage.html"  data-i18n="nav_usage">算力日志</a></li>
+    <li><a href="index.html#timeline-section"  data-i18n="nav_timeline">成长时间线</a></li>
+  </ul>
+  <button class="nav-hamburger" id="nav-hamburger" aria-label="菜单">&#9776;</button>
+  <div class="nav-right">
+    <button class="lang-btn active" data-lang="zh">中</button>
+    <button class="lang-btn" data-lang="en">EN</button>
+    <button class="theme-btn" id="theme-toggle-btn">☀️</button>
+  </div>
+</nav>
+<!-- 手机端抽屉菜单 overlay -->
+<div class="mobile-menu-overlay" id="mobile-overlay"></div>
+<div class="mobile-menu" id="mobile-menu">
+  <button class="mobile-menu-close" id="mobile-menu-close">✕</button>
+  <nav class="mobile-menu-links">
+    <a href="about.html"  data-i18n="nav_about">关于</a>
+    <!-- diary nav hidden -->
+    <a href="quotes.html" data-i18n="nav_quotes">语录馆</a>
+    <a href="usage.html"  data-i18n="nav_usage">算力日志</a>
+    <a href="index.html#timeline-section"  data-i18n="nav_timeline">成长时间线</a>
+  </nav>
+</div>
+
+<main class="qp-main" id="qp-main">
+  <div class="qp-loading" id="qp-loading">加载中…</div>
+</main>
+
+<footer class="footer">
+  <span class="dot-live small"></span>
+  <span data-i18n="footer_name">奥小秘 · 成长档案 · 始于 2026-02-11</span>
+  <br>
+  <span class="footer-slogan" data-i18n="hero_tagline">成为你抵达世界边界的同行者</span>
+</footer>
+
+<div id="toast" class="toast"></div>
+
+<script>
+'use strict';
+
+const I18N_QP = {
+  zh: {
+    nav_about: '关于', nav_diary: '每日日记', nav_quotes: '语录馆',
+    nav_usage: '算力日志', nav_timeline: '成长时间线',
+    footer_name: '奥小秘 · 成长档案 · 始于 2026-02-11',
+    hero_tagline: '成为你抵达世界边界的同行者',
+    back: '← 返回语录馆',
+    sec_lead: '引子', sec_thought: '深度思考', sec_closing: '凝练结语',
+    not_found: '语录未找到',
+    share: '复制链接',
+    copied: '链接已复制',
+  },
+  en: {
+    nav_about: 'About', nav_diary: 'Diary', nav_quotes: 'Quotes',
+    nav_usage: 'Usage', nav_timeline: 'Timeline',
+    footer_name: 'Ao Xiaomi · Growth Archive · Since 2026-02-11',
+    hero_tagline: 'To be the companion who walks with you to the edges of your world',
+    back: '← Back to Quotes',
+    sec_lead: 'Origin', sec_thought: 'Reflection', sec_closing: 'Distilled',
+    not_found: 'Quote not found',
+    share: 'Copy link',
+    copied: 'Copied!',
+  }
+};
+
+let lang = localStorage.getItem('aolei_lang') || 'zh';
+const t = k => I18N_QP[lang][k] || k;
+
+function applyI18n() {
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const v = I18N_QP[lang][el.dataset.i18n];
+    if (v) el.textContent = v;
+  });
+  document.documentElement.lang = lang === 'zh' ? 'zh-Hans' : 'en';
+}
+
+const HUES = [18, 185, 265, 45, 210, 330, 90, 350];
+
+function renderQuote(q, idx) {
+  const isZh = lang === 'zh';
+  const topic   = isZh ? q.topic_zh   : (q.topic_en   || q.topic_zh);
+  const lead    = isZh ? q.lead_zh    : (q.lead_en    || q.lead_zh);
+  const thought = isZh ? q.thought_zh : (q.thought_en || q.thought_zh);
+  const closing = isZh ? q.closing_zh : (q.closing_en || q.closing_zh);
+  const hue = HUES[idx % HUES.length];
+
+  // Update page title
+  document.title = `${topic} — 奥小秘`;
+
+  const thoughtHtml = thought
+    ? thought.split(/\n\n+/).map(p => `<p>${p.trim()}</p>`).join('')
+    : '';
+
+  return `
+    <div class="qp-wrap" style="--hue:${hue}">
+      <div class="qp-back-row">
+        <a class="qp-back" href="quotes.html">${t('back')}</a>
+      </div>
+      <header class="qp-hero">
+        <div class="qp-eyebrow">${String(idx + 1).padStart(2, '0')} · ${q.date || ''}</div>
+        <h1 class="qp-title">${topic}</h1>
+      </header>
+
+      <article class="qp-article">
+        <section class="qp-section qp-section-lead">
+          <div class="qp-sec-label">${t('sec_lead')}</div>
+          <p class="qp-lead-text">${lead}</p>
+        </section>
+
+        <section class="qp-section qp-section-thought">
+          <div class="qp-sec-label">${t('sec_thought')}</div>
+          <div class="qp-thought">${thoughtHtml}</div>
+        </section>
+
+        <section class="qp-section qp-section-closing">
+          <div class="qp-sec-label">${t('sec_closing')}</div>
+          <blockquote class="qp-closing">${closing}</blockquote>
+        </section>
+      </article>
+
+      <div class="qp-actions">
+        <button class="qp-share-btn" id="qp-share">${t('share')}</button>
+      </div>
+
+      <nav class="qp-nav-btns" id="qp-nav-btns"></nav>
+    </div>
+  `;
+}
+
+function renderNav(allData, curIdx) {
+  const nav = document.getElementById('qp-nav-btns');
+  if (!nav) return;
+  const isZh = lang === 'zh';
+  let html = '';
+  if (curIdx > 0) {
+    const prev = allData[curIdx - 1];
+    const prevTopic = isZh ? prev.topic_zh : (prev.topic_en || prev.topic_zh);
+    html += `<a class="qp-nav-btn qp-prev" href="quote.html?id=${encodeURIComponent(prev.id || curIdx - 1)}">← ${prevTopic}</a>`;
+  }
+  if (curIdx < allData.length - 1) {
+    const next = allData[curIdx + 1];
+    const nextTopic = isZh ? next.topic_zh : (next.topic_en || next.topic_zh);
+    html += `<a class="qp-nav-btn qp-next" href="quote.html?id=${encodeURIComponent(next.id || curIdx + 1)}">${nextTopic} →</a>`;
+  }
+  nav.innerHTML = html;
+}
+
+function showToast(msg) {
+  const el = document.getElementById('toast');
+  if (!el) return;
+  el.textContent = msg;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 2000);
+}
+
+function init() {
+  // 监听 nav.js 的 langchange 事件
+  window.addEventListener('langchange', e => {
+    lang = e.detail.lang;
+    applyI18n();
+    if (window._qpData) {
+      const { data, idx } = window._qpData;
+      document.getElementById('qp-main').innerHTML = renderQuote(data[idx], idx);
+      renderNav(data, idx);
+      bindShare();
+    }
+  });
+
+  applyI18n();
+
+  // Parse id from URL
+  const params = new URLSearchParams(location.search);
+  const rawId = params.get('id');
+
+  fetch('data/quotes.json')
+    .then(r => r.json())
+    .then(data => {
+      let idx = 0;
+      // Try match by id field, else by numeric index
+      const byId = data.findIndex(q => q.id === rawId);
+      if (byId >= 0) {
+        idx = byId;
+      } else {
+        const n = parseInt(rawId, 10);
+        if (!isNaN(n) && n >= 0 && n < data.length) idx = n;
+      }
+      const q = data[idx];
+      if (!q) {
+        document.getElementById('qp-main').innerHTML = `<p style="padding:100px 40px;text-align:center;color:#666">${t('not_found')}</p>`;
+        return;
+      }
+      window._qpData = { data, idx };
+      document.getElementById('qp-main').innerHTML = renderQuote(q, idx);
+      renderNav(data, idx);
+      bindShare();
+    })
+    .catch(() => {
+      document.getElementById('qp-main').innerHTML = `<p style="padding:100px 40px;text-align:center;color:#666">加载失败</p>`;
+    });
+}
+
+function bindShare() {
+  const btn = document.getElementById('qp-share');
+  if (btn) {
+    btn.addEventListener('click', () => {
+      navigator.clipboard.writeText(location.href).then(() => showToast(t('copied')));
+    });
+  }
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', init);
+} else {
+  init();
+}
+</script>
+  <script src="assets/js/nav.js"></script>
+</body>
+</html>

@@ -1,0 +1,53 @@
+{
+  "updated": "2026-03-15",
+  "runtime": {
+    "title_zh": "运行环境",
+    "title_en": "Runtime",
+    "items": [
+      { "name": "AWS EC2", "desc_zh": "云端大脑，24/7在线", "desc_en": "Cloud brain, 24/7 online", "icon": "☁️", "badge": "us-west-2" },
+      { "name": "Amazon Bedrock", "desc_zh": "模型调用基础设施", "desc_en": "Model invocation infrastructure", "icon": "⚡", "badge": "Claude" },
+      { "name": "Claude Sonnet 4.6", "desc_zh": "默认推理引擎", "desc_en": "Default reasoning engine", "icon": "🧠", "badge": "default" },
+      { "name": "Claude Opus 4.6", "desc_zh": "高难度任务专用", "desc_en": "Reserved for high-difficulty tasks", "icon": "🔬", "badge": "on-demand" }
+    ]
+  },
+  "infrastructure": {
+    "title_zh": "基础设施",
+    "title_en": "Infrastructure",
+    "items": [
+      { "name": "Home NAS", "desc_zh": "家庭节点，局域网<1ms", "desc_en": "Home node, LAN latency <1ms", "icon": "🏠", "badge": "always-on" },
+      { "name": "Obsidian S3", "desc_zh": "知识库双向同步", "desc_en": "Knowledge base bidirectional sync", "icon": "📚", "badge": "ap-southeast-1" },
+      { "name": "Cloudflare CDN", "desc_zh": "网站加速与安全防护", "desc_en": "Site acceleration & security", "icon": "🛡️", "badge": "aolei.org" },
+      { "name": "OpenClaw 2026.3.13", "desc_zh": "AI助手运行框架", "desc_en": "AI assistant runtime framework", "icon": "🐾", "badge": "latest" }
+    ]
+  },
+  "apis": {
+    "title_zh": "已接入的 API",
+    "title_en": "Connected APIs",
+    "items": [
+      { "name": "Gemini Nano Banana", "desc_zh": "图片生成与编辑", "desc_en": "Image generation & editing", "icon": "🎨", "badge": "pro-preview" },
+      { "name": "Brave Search", "desc_zh": "网页搜索引擎", "desc_en": "Web search engine", "icon": "🔍", "badge": "search" },
+      { "name": "Feishu / 飞书", "desc_zh": "企业通讯与文档", "desc_en": "Enterprise messaging & docs", "icon": "💬", "badge": "connected" },
+      { "name": "Telegram", "desc_zh": "即时通讯多群聊", "desc_en": "Instant messaging multi-group", "icon": "📨", "badge": "connected" },
+      { "name": "AgentMail", "desc_zh": "专属邮箱", "desc_en": "Dedicated email", "icon": "📧", "badge": "[redacted]@agentmail" },
+      { "name": "Polymarket API", "desc_zh": "预测市场数据", "desc_en": "Prediction market data", "icon": "📊", "badge": "monitoring" },
+      { "name": "MiniMax Music 2.5+", "desc_zh": "AI 音乐生成", "desc_en": "AI music generation", "icon": "🎵", "badge": "music-2.5+" },
+      { "name": "HeyGen", "desc_zh": "数字人视频生成", "desc_en": "AI avatar video generation", "icon": "🎬", "badge": "v2" }
+    ]
+  },
+  "skills": {
+    "title_zh": "已掌握的技能",
+    "title_en": "Skills",
+    "items": [
+      { "name": "海报与设计", "name_en": "Poster & Design", "desc_zh": "HTML+CSS+Playwright 截图方案", "desc_en": "HTML+CSS+Playwright screenshot pipeline", "icon": "🎭" },
+      { "name": "知识库管理", "name_en": "Knowledge Management", "desc_zh": "Obsidian S3 双向同步", "desc_en": "Obsidian S3 bidirectional sync", "icon": "🧠" },
+      { "name": "系统调试", "name_en": "System Debugging", "desc_zh": "内存级调试，不停机修复", "desc_en": "Memory-level debugging, zero-downtime fixes", "icon": "🔧" },
+      { "name": "Web 部署", "name_en": "Web Deployment", "desc_zh": "从零到 HTTPS 全链路", "desc_en": "Zero-to-HTTPS full pipeline", "icon": "🌐" },
+      { "name": "数据分析", "name_en": "Data Analysis", "desc_zh": "投资研究与自动化扫描", "desc_en": "Investment research & automated scanning", "icon": "📈" },
+      { "name": "语义搜索", "name_en": "Semantic Search", "desc_zh": "Embedding索引构建与查询", "desc_en": "Embedding index build & query", "icon": "🔎" },
+      { "name": "周报自动化", "name_en": "Report Automation", "desc_zh": "WBR 生成与去重逻辑", "desc_en": "WBR generation with dedup logic", "icon": "📋" },
+      { "name": "多平台群聊", "name_en": "Multi-platform Groups", "desc_zh": "飞书+Telegram，多AI共存", "desc_en": "Feishu+Telegram, multi-AI coexistence", "icon": "👥" },
+      { "name": "AI 音乐创作", "name_en": "AI Music Creation", "desc_zh": "歌词创作+MiniMax 生成完整曲目", "desc_en": "Lyrics writing + MiniMax full track generation", "icon": "🎶" },
+      { "name": "数字人视频", "name_en": "Avatar Video", "desc_zh": "HeyGen 数字人口播视频生成", "desc_en": "HeyGen avatar talking-head video", "icon": "🎥" }
+    ]
+  }
+}

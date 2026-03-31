@@ -1,0 +1,2006 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OpenClaw on AWS — Demo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  /* ===== RESET & BASE ===== */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #050508;
+    --orange: #FF6B35;
+    --cyan: #00D4AA;
+    --orange-dim: rgba(255, 107, 53, 0.15);
+    --cyan-dim: rgba(0, 212, 170, 0.15);
+    --text: #E8E8F0;
+    --text-dim: rgba(232, 232, 240, 0.5);
+    --border: rgba(232, 232, 240, 0.1);
+    --mono: 'JetBrains Mono', monospace;
+    --sans: -apple-system, 'PingFang SC', 'Helvetica Neue', sans-serif;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 16px;
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  /* ===== SCANLINE OVERLAY ===== */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0,0,0,0.03) 2px,
+      rgba(0,0,0,0.03) 4px
+    );
+    pointer-events: none;
+    z-index: 9999;
+  }
+
+  /* ===== GRID BACKGROUND ===== */
+  .grid-bg {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(255,107,53,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,107,53,0.04) 1px, transparent 1px);
+    background-size: 60px 60px;
+    pointer-events: none;
+  }
+
+  /* ===== SECTION LABEL ===== */
+  .section-label {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    color: var(--orange);
+    text-transform: uppercase;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .section-label::before {
+    content: '';
+    display: inline-block;
+    width: 24px;
+    height: 1px;
+    background: var(--orange);
+  }
+
+  /* ===== FADE UP ANIMATION ===== */
+  .fade-up {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  .fade-up.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .fade-up.delay-1 { transition-delay: 0.1s; }
+  .fade-up.delay-2 { transition-delay: 0.2s; }
+  .fade-up.delay-3 { transition-delay: 0.3s; }
+  .fade-up.delay-4 { transition-delay: 0.4s; }
+  .fade-up.delay-5 { transition-delay: 0.5s; }
+
+  /* ===== SECTION BASE ===== */
+  section {
+    position: relative;
+    padding: 100px 0;
+    overflow: hidden;
+  }
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 40px;
+  }
+
+  /* ===== GOLD QUOTE ===== */
+  .gold-quote {
+    font-family: var(--sans);
+    font-size: clamp(28px, 4vw, 48px);
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 60px;
+    line-height: 1.3;
+  }
+  .gold-quote span {
+    color: var(--orange);
+  }
+
+  /* ============================
+     SECTION 1: HERO
+  ============================= */
+  #hero {
+    position: relative;
+    height: 100vh;
+    min-height: 700px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    overflow: hidden;
+  }
+
+  #hero-canvas {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+  }
+
+  .hero-content {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    padding: 0 40px;
+  }
+
+  .hero-eyebrow {
+    font-family: var(--mono);
+    font-size: 13px;
+    letter-spacing: 0.3em;
+    color: var(--cyan);
+    margin-bottom: 24px;
+    text-transform: uppercase;
+  }
+
+  .hero-title {
+    font-family: var(--mono);
+    font-size: clamp(48px, 9vw, 120px);
+    font-weight: 800;
+    color: var(--orange);
+    line-height: 1;
+    letter-spacing: -0.02em;
+    text-shadow: 0 0 80px rgba(255,107,53,0.4);
+    margin-bottom: 40px;
+  }
+
+  .hero-subtitle {
+    font-family: var(--mono);
+    font-size: clamp(14px, 2vw, 18px);
+    color: var(--text-dim);
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+  .hero-subtitle .cursor {
+    display: inline-block;
+    width: 2px;
+    height: 1.2em;
+    background: var(--cyan);
+    animation: blink 0.8s step-end infinite;
+    vertical-align: middle;
+  }
+  @keyframes blink { 50% { opacity: 0; } }
+
+  /* Status Box */
+  .status-box {
+    position: absolute;
+    bottom: 40px;
+    right: 40px;
+    z-index: 2;
+    border: 1px solid rgba(0,212,170,0.3);
+    background: rgba(5,5,8,0.8);
+    backdrop-filter: blur(10px);
+    padding: 20px 24px;
+    min-width: 200px;
+  }
+  .status-box::before {
+    content: 'STATUS';
+    display: block;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    color: var(--cyan);
+    margin-bottom: 12px;
+  }
+  .status-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--text-dim);
+    margin-bottom: 8px;
+  }
+  .status-item:last-child { margin-bottom: 0; }
+  .status-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--cyan);
+    box-shadow: 0 0 8px var(--cyan);
+    animation: pulse-dot 2s ease-in-out infinite;
+    flex-shrink: 0;
+  }
+  @keyframes pulse-dot {
+    0%, 100% { opacity: 1; box-shadow: 0 0 6px var(--cyan); }
+    50% { opacity: 0.5; box-shadow: 0 0 12px var(--cyan); }
+  }
+  .status-value {
+    color: var(--cyan);
+    font-weight: 600;
+    margin-left: auto;
+  }
+
+  /* Scroll Arrow */
+  .scroll-arrow {
+    position: absolute;
+    bottom: 40px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    animation: bounce 2s ease-in-out infinite;
+  }
+  .scroll-arrow span {
+    display: block;
+    width: 1px;
+    height: 60px;
+    background: linear-gradient(to bottom, transparent, var(--orange));
+  }
+  .scroll-arrow::after {
+    content: '';
+    display: block;
+    width: 8px;
+    height: 8px;
+    border-right: 1px solid var(--orange);
+    border-bottom: 1px solid var(--orange);
+    transform: rotate(45deg);
+    margin-top: -6px;
+  }
+  @keyframes bounce {
+    0%, 100% { transform: translateX(-50%) translateY(0); }
+    50% { transform: translateX(-50%) translateY(8px); }
+  }
+
+  /* Corner decoration */
+  .hero-corner {
+    position: absolute;
+    top: 30px;
+    left: 40px;
+    z-index: 2;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-dim);
+    letter-spacing: 0.1em;
+  }
+  .hero-corner strong {
+    color: var(--orange);
+    font-weight: 600;
+  }
+
+  /* ============================
+     SECTION 2: KIRO
+  ============================= */
+  #kiro { background: var(--bg); }
+
+  .kiro-header {
+    margin-bottom: 64px;
+  }
+
+  .cards-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+  }
+
+  .scene-card {
+    border: 1px solid var(--border);
+    background: rgba(255,255,255,0.02);
+    padding: 0;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+  .scene-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--orange), transparent);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+  .scene-card:hover {
+    border-color: rgba(255,107,53,0.4);
+    box-shadow: 0 0 30px rgba(255,107,53,0.1);
+  }
+  .scene-card:hover::before {
+    opacity: 1;
+  }
+
+  .card-number {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--orange);
+    letter-spacing: 0.1em;
+    padding: 16px 20px 0;
+  }
+
+  .video-slot {
+    width: 100%;
+    aspect-ratio: 16/9;
+    background: rgba(255,107,53,0.04);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .video-slot::before {
+    content: '▶';
+    font-size: 32px;
+    color: rgba(255,107,53,0.3);
+  }
+  .video-slot::after {
+    content: 'VIDEO';
+    position: absolute;
+    bottom: 10px;
+    right: 12px;
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--text-dim);
+    letter-spacing: 0.15em;
+  }
+  /* Video slot scan effect */
+  .video-slot .scan-line {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--orange), transparent);
+    opacity: 0.5;
+    animation: scan 3s linear infinite;
+  }
+  @keyframes scan {
+    0% { top: 0%; }
+    100% { top: 100%; }
+  }
+
+  .card-body {
+    padding: 20px;
+  }
+  .card-title {
+    font-family: var(--mono);
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 10px;
+  }
+  .card-desc {
+    font-size: 14px;
+    color: var(--text-dim);
+    line-height: 1.6;
+    margin-bottom: 16px;
+  }
+  .card-quote {
+    font-style: italic;
+    font-size: 13px;
+    color: var(--orange);
+    border-top: 1px solid var(--border);
+    padding-top: 14px;
+    line-height: 1.5;
+  }
+
+  /* ============================
+     SECTION 3: NOVA SONIC
+  ============================= */
+  #sonic {
+    background: linear-gradient(180deg, var(--bg) 0%, rgba(0,212,170,0.03) 50%, var(--bg) 100%);
+  }
+
+  .arch-diagram {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+    margin: 48px 0;
+    flex-wrap: wrap;
+  }
+
+  .arch-node {
+    border: 1px solid var(--border);
+    background: rgba(255,255,255,0.02);
+    padding: 20px 28px;
+    text-align: center;
+    position: relative;
+    transition: border-color 0.3s, box-shadow 0.3s;
+    min-width: 140px;
+  }
+  .arch-node:hover {
+    border-color: var(--cyan);
+    box-shadow: 0 0 20px rgba(0,212,170,0.15);
+  }
+  .arch-node.highlight {
+    border-color: rgba(0,212,170,0.5);
+    background: rgba(0,212,170,0.05);
+  }
+  .arch-node .node-icon {
+    font-size: 28px;
+    margin-bottom: 8px;
+    display: block;
+  }
+  .arch-node .node-label {
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text);
+    letter-spacing: 0.05em;
+  }
+  .arch-node .node-sub {
+    font-size: 11px;
+    color: var(--text-dim);
+    margin-top: 4px;
+  }
+  .arch-node-tag {
+    position: absolute;
+    top: -1px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--cyan);
+    color: var(--bg);
+    font-family: var(--mono);
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    padding: 2px 8px;
+    white-space: nowrap;
+  }
+
+  .arch-arrow {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0 8px;
+  }
+  .arch-arrow .arrow-line {
+    width: 60px;
+    height: 1px;
+    background: linear-gradient(90deg, var(--cyan), rgba(0,212,170,0.3));
+    position: relative;
+  }
+  .arch-arrow .arrow-line::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    top: -4px;
+    width: 0;
+    height: 0;
+    border-left: 8px solid var(--cyan);
+    border-top: 4px solid transparent;
+    border-bottom: 4px solid transparent;
+  }
+  .arch-arrow .arrow-label {
+    font-family: var(--mono);
+    font-size: 9px;
+    color: var(--cyan);
+    margin-top: 6px;
+    letter-spacing: 0.05em;
+    white-space: nowrap;
+  }
+
+  .sonic-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    border: 1px solid var(--cyan);
+    background: transparent;
+    color: var(--cyan);
+    font-family: var(--mono);
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    padding: 16px 36px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background 0.3s, box-shadow 0.3s, color 0.3s;
+    position: relative;
+    overflow: hidden;
+    margin-top: 8px;
+  }
+  .sonic-btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--cyan);
+    transform: translateX(-101%);
+    transition: transform 0.3s ease;
+    z-index: 0;
+  }
+  .sonic-btn:hover {
+    color: var(--bg);
+    box-shadow: 0 0 30px rgba(0,212,170,0.3);
+  }
+  .sonic-btn:hover::before {
+    transform: translateX(0);
+  }
+  .sonic-btn span {
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Waveform animation */
+  .waveform {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    height: 24px;
+  }
+  .waveform-bar {
+    width: 3px;
+    background: var(--cyan);
+    border-radius: 2px;
+    animation: wave 1.2s ease-in-out infinite;
+  }
+  .waveform-bar:nth-child(1) { animation-delay: 0s; height: 40%; }
+  .waveform-bar:nth-child(2) { animation-delay: 0.1s; height: 70%; }
+  .waveform-bar:nth-child(3) { animation-delay: 0.2s; height: 100%; }
+  .waveform-bar:nth-child(4) { animation-delay: 0.3s; height: 60%; }
+  .waveform-bar:nth-child(5) { animation-delay: 0.4s; height: 80%; }
+  .waveform-bar:nth-child(6) { animation-delay: 0.5s; height: 40%; }
+  .waveform-bar:nth-child(7) { animation-delay: 0.4s; height: 90%; }
+  .waveform-bar:nth-child(8) { animation-delay: 0.3s; height: 55%; }
+  @keyframes wave {
+    0%, 100% { transform: scaleY(0.4); }
+    50% { transform: scaleY(1); }
+  }
+
+  /* ============================
+     SECTION 4: NOVA CANVAS
+  ============================= */
+  #canvas-section {
+    background: var(--bg);
+  }
+
+  .canvas-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 60px;
+    align-items: start;
+  }
+
+  .canvas-arch {
+    position: relative;
+  }
+
+  .canvas-arch .arch-diagram {
+    margin: 0;
+    justify-content: flex-start;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0;
+  }
+
+  .canvas-arch-row {
+    display: flex;
+    align-items: center;
+    gap: 0;
+  }
+
+  .canvas-arch .arch-arrow-down {
+    display: flex;
+    align-items: center;
+    padding: 4px 0 4px 68px;
+  }
+  .canvas-arch .arch-arrow-down .arrow-v {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .canvas-arch .arch-arrow-down .arrow-v-line {
+    width: 1px;
+    height: 30px;
+    background: linear-gradient(to bottom, var(--orange), rgba(255,107,53,0.3));
+  }
+  .canvas-arch .arch-arrow-down .arrow-v-tip {
+    width: 0; height: 0;
+    border-top: 8px solid var(--orange);
+    border-left: 4px solid transparent;
+    border-right: 4px solid transparent;
+    margin-top: -1px;
+  }
+  .canvas-arch .arch-arrow-down .arrow-v-label {
+    font-family: var(--mono);
+    font-size: 9px;
+    color: var(--orange);
+    margin-left: 8px;
+    margin-top: -14px;
+    white-space: nowrap;
+  }
+
+  .canvas-arch .arch-node { min-width: 120px; }
+
+  /* Canvas Demo */
+  .canvas-demo {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .canvas-frame {
+    border: 1px solid var(--orange);
+    aspect-ratio: 1/1;
+    max-width: 400px;
+    width: 100%;
+    position: relative;
+    overflow: hidden;
+    background: rgba(255,107,53,0.03);
+  }
+  .canvas-frame::before,
+  .canvas-frame::after {
+    content: '';
+    position: absolute;
+    width: 16px;
+    height: 16px;
+  }
+  .canvas-frame::before {
+    top: 0; left: 0;
+    border-top: 2px solid var(--orange);
+    border-left: 2px solid var(--orange);
+  }
+  .canvas-frame::after {
+    bottom: 0; right: 0;
+    border-bottom: 2px solid var(--orange);
+    border-right: 2px solid var(--orange);
+  }
+  .canvas-placeholder {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    color: var(--text-dim);
+  }
+  .canvas-placeholder-icon {
+    font-size: 48px;
+    opacity: 0.3;
+  }
+  .canvas-placeholder-text {
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    color: var(--text-dim);
+    text-align: center;
+  }
+  #canvas-result {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: none;
+  }
+  #canvas-loading {
+    position: absolute;
+    inset: 0;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    background: rgba(5,5,8,0.8);
+  }
+  .spinner {
+    width: 40px;
+    height: 40px;
+    border: 2px solid rgba(255,107,53,0.2);
+    border-top-color: var(--orange);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .canvas-input-group {
+    display: flex;
+    gap: 0;
+    border: 1px solid var(--border);
+    transition: border-color 0.3s;
+  }
+  .canvas-input-group:focus-within {
+    border-color: var(--orange);
+  }
+  #canvas-prompt {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    padding: 14px 16px;
+    font-family: var(--sans);
+    font-size: 14px;
+    color: var(--text);
+    caret-color: var(--orange);
+  }
+  #canvas-prompt::placeholder {
+    color: var(--text-dim);
+  }
+  .canvas-gen-btn {
+    background: var(--orange);
+    border: none;
+    color: var(--bg);
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    padding: 14px 20px;
+    cursor: pointer;
+    transition: opacity 0.2s;
+    white-space: nowrap;
+  }
+  .canvas-gen-btn:hover { opacity: 0.85; }
+  .canvas-gen-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  .canvas-error {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--orange);
+    display: none;
+  }
+
+  /* ============================
+     SECTION 5: MORE SCENES
+  ============================= */
+  #more {
+    background: linear-gradient(180deg, var(--bg) 0%, rgba(255,107,53,0.02) 50%, var(--bg) 100%);
+  }
+
+  .more-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 32px;
+    margin-top: 64px;
+  }
+
+  .more-card {
+    border: 1px solid var(--border);
+    background: rgba(255,255,255,0.015);
+    padding: 32px;
+    transition: border-color 0.3s, transform 0.3s, box-shadow 0.3s;
+    cursor: default;
+  }
+  .more-card:hover {
+    border-color: rgba(255,107,53,0.3);
+    transform: translateY(-4px);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.3), 0 0 20px rgba(255,107,53,0.08);
+  }
+
+  .more-card-icon {
+    font-size: 32px;
+    margin-bottom: 16px;
+    display: block;
+  }
+  .more-card-title {
+    font-family: var(--mono);
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 12px;
+  }
+  .more-card-desc {
+    font-size: 14px;
+    color: var(--text-dim);
+    line-height: 1.6;
+    margin-bottom: 24px;
+  }
+
+  /* Mini arch diagram inside cards */
+  .mini-arch {
+    border: 1px solid var(--border);
+    background: rgba(0,0,0,0.3);
+    padding: 16px;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-dim);
+  }
+  .mini-arch-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 6px;
+  }
+  .mini-arch-row:last-child { margin-bottom: 0; }
+  .mini-node {
+    border: 1px solid rgba(255,107,53,0.3);
+    padding: 3px 8px;
+    color: var(--text);
+    white-space: nowrap;
+  }
+  .mini-node.cyan {
+    border-color: rgba(0,212,170,0.3);
+    color: var(--cyan);
+  }
+  .mini-node.orange {
+    border-color: rgba(255,107,53,0.5);
+    color: var(--orange);
+  }
+  .mini-arrow {
+    color: var(--text-dim);
+    flex-shrink: 0;
+  }
+
+  /* ===== FOOTER ===== */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 40px 0;
+    text-align: center;
+  }
+  .footer-logo {
+    font-family: var(--mono);
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--orange);
+    margin-bottom: 12px;
+  }
+  .footer-meta {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-dim);
+    letter-spacing: 0.1em;
+  }
+
+  /* ===== NAV ===== */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    padding: 0 40px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    background: rgba(5,5,8,0.8);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-brand {
+    font-family: var(--mono);
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--orange);
+    letter-spacing: 0.05em;
+  }
+  .nav-links {
+    margin-left: auto;
+    display: flex;
+    gap: 32px;
+    list-style: none;
+  }
+  .nav-links a {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    color: var(--text-dim);
+    text-decoration: none;
+    text-transform: uppercase;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--orange); }
+
+  /* ===== DIVIDER ===== */
+  .section-divider {
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--border), transparent);
+    margin: 0;
+  }
+
+  /* ===== RESPONSIVE ===== */
+  @media (max-width: 640px) {
+    nav { padding: 0 20px; }
+    .nav-links { display: none; }
+    .container { padding: 0 20px; }
+    section { padding: 70px 0; }
+
+    .hero-title { font-size: 42px; }
+    .hero-content { padding: 0 20px; }
+
+    .status-box {
+      bottom: 80px;
+      right: 16px;
+      left: 16px;
+      min-width: unset;
+    }
+
+    .scroll-arrow { bottom: 24px; }
+
+    .cards-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .arch-diagram {
+      flex-direction: column;
+      gap: 0;
+    }
+    .arch-arrow {
+      transform: rotate(90deg);
+      padding: 8px 0;
+    }
+    .arch-arrow .arrow-line { width: 40px; }
+
+    .canvas-layout {
+      grid-template-columns: 1fr;
+      gap: 40px;
+    }
+
+    .more-grid {
+      grid-template-columns: 1fr;
+      gap: 20px;
+    }
+
+    .canvas-arch .arch-diagram {
+      flex-direction: row;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+  }
+
+  /* ===== VIDEO LIGHTBOX ===== */
+  .video-slot {
+    cursor: pointer;
+    position: relative;
+  }
+  .video-slot::after {
+    content: '▶';
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 36px;
+    color: rgba(255,255,255,0.7);
+    background: rgba(0,0,0,0.25);
+    opacity: 0;
+    transition: opacity 0.2s;
+    pointer-events: none;
+    border-radius: 4px;
+  }
+  .video-slot:hover::after {
+    opacity: 1;
+  }
+  #video-lightbox {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.92);
+    z-index: 9999;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 16px;
+  }
+  #video-lightbox.active {
+    display: flex;
+  }
+  #video-lightbox video {
+    max-width: 90vw;
+    max-height: 80vh;
+    border: 1px solid rgba(255,107,53,0.4);
+    border-radius: 4px;
+    box-shadow: 0 0 40px rgba(255,107,53,0.2);
+  }
+  #video-lightbox-close {
+    position: absolute;
+    top: 24px;
+    right: 32px;
+    font-size: 28px;
+    color: rgba(255,255,255,0.6);
+    cursor: pointer;
+    font-family: 'JetBrains Mono', monospace;
+    line-height: 1;
+    transition: color 0.2s;
+  }
+  #video-lightbox-close:hover {
+    color: var(--orange);
+  }
+  #video-lightbox-hint {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: rgba(255,255,255,0.3);
+    letter-spacing: 0.1em;
+  }
+
+</style>
+</head>
+<body>
+
+<!-- ===== NAV ===== -->
+<nav>
+  <div class="nav-brand">OpenClaw × AWS</div>
+  <ul class="nav-links">
+    <li><a href="#kiro">Kiro</a></li>
+    <li><a href="#install">安装指南</a></li>
+    <li><a href="#deploy-compare">部署方案</a></li>
+    <li><a href="#sonic">Nova Sonic</a></li>
+    <li><a href="#canvas-section">Nova Canvas</a></li>
+    <li><a href="#more">More</a></li>
+  </ul>
+</nav>
+
+<!-- ===== SECTION 1: HERO ===== -->
+<section id="hero">
+  <canvas id="hero-canvas"></canvas>
+  <div class="grid-bg"></div>
+
+  <div class="hero-corner">
+    <div><strong>BUILD_DATE</strong> 2026.03.17</div>
+    <div style="margin-top:4px"><strong>ENV</strong> AWS × Bedrock</div>
+  </div>
+
+  <div class="hero-content">
+    <div class="hero-eyebrow">// AWS × OpenClaw Demo</div>
+    <h1 class="hero-title">OpenClaw<br>on AWS</h1>
+    <div class="hero-subtitle">
+      <span id="typewriter-text"></span><span class="cursor"></span>
+    </div>
+  </div>
+
+  <div class="status-box">
+    <div class="status-item">
+      <span class="status-dot"></span>
+      <span>SYSTEM</span>
+      <span class="status-value">ONLINE</span>
+    </div>
+    <div class="status-item">
+      <span class="status-dot"></span>
+      <span>BEDROCK</span>
+      <span class="status-value">CONNECTED</span>
+    </div>
+    <div class="status-item">
+      <span class="status-dot"></span>
+      <span>MODELS</span>
+      <span class="status-value">10+</span>
+    </div>
+  </div>
+
+  <div class="scroll-arrow"><span></span></div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- ===== SECTION 2: KIRO ===== -->
+<section id="kiro">
+  <div class="grid-bg" style="opacity:0.5"></div>
+  <div class="container">
+    <div class="kiro-header">
+      <div class="section-label fade-up">02 · Kiro 全生命周期</div>
+      <div class="gold-quote fade-up delay-1">
+        「文字一敲，<span style="white-space:nowrap;">云动了，模型换了，龙虾🦞活了。</span>」
+      </div>
+      <p class="fade-up delay-2" style="font-size:16px; color:var(--text-dim); max-width:560px; line-height:1.7;">
+        从部署上线到模型切换，从系统运维到玄学任务，Kiro 把自然语言变成云上操作。
+        只需一句话，一切就绪。
+      </p>
+    </div>
+
+    <div class="cards-grid">
+      <!-- Card 1 -->
+      <div class="scene-card fade-up delay-1">
+        <div class="card-number">SCENE_01</div>
+        <div class="video-slot" style="padding:0;overflow:hidden;background:#000;">
+          <video autoplay muted loop playsinline style="width:100%;height:100%;object-fit:cover;display:block;">
+            <source src="/assets/kiro_deploy.mp4" type="video/mp4">
+          </video>
+        </div>
+        <div class="card-body">
+          <div class="card-title">🚀 部署上线</div>
+          <div class="card-desc">
+            告诉 Kiro「帮我在 AWS 上部署 OpenClaw」——选 Region、机型、模型，Kiro 自动跑，VPC / EC2 / IAM / VPC Endpoints 一键创建，约 8 分钟 OpenClaw 上线，全程不用打一行命令。
+          </div>
+          <div class="card-quote">「云的弹性，因语言而触手可及。」</div>
+        </div>
+      </div>
+
+      <!-- Card 2 -->
+      <div class="scene-card fade-up delay-2">
+        <div class="card-number">SCENE_02</div>
+        <div class="video-slot" style="padding:0;overflow:hidden;background:#000;">
+          <video autoplay muted loop playsinline style="width:100%;height:100%;object-fit:cover;display:block;">
+            <source src="/assets/kiro_switch.mp4" type="video/mp4">
+          </video>
+        </div>
+        <div class="card-body">
+          <div class="card-title">🔄 切换模型</div>
+          <div class="card-desc">
+            「帮我把模型换成 DeepSeek」——Kiro 秒改 openclaw.json 配置、重启 Gateway、验证响应，Bedrock 上 Nova / Claude / Kimi / DeepSeek 随时切换，零停机。
+          </div>
+          <div class="card-quote">「换模型，像换频道一样简单。」</div>
+        </div>
+      </div>
+
+      <!-- Card 3 -->
+      <div class="scene-card fade-up delay-3">
+        <div class="card-number">SCENE_03</div>
+        <div class="video-slot" style="padding:0;overflow:hidden;background:#000;">
+          <video autoplay muted loop playsinline style="width:100%;height:100%;object-fit:cover;display:block;">
+            <source src="/assets/kiro_debug.mp4" type="video/mp4">
+          </video>
+        </div>
+        <div class="card-body">
+          <div class="card-title">🦞 复活龙虾</div>
+          <div class="card-desc">
+            「我的龙虾不回应了，帮我排查一下」——Kiro SSH 进服务器，读日志、定位 config 非法字段、一键修复配置、重启 Gateway，30 秒内复活。
+          </div>
+          <div class="card-quote">「没有 Kiro 驯服不了的故障。」</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- ===== SECTION: INSTALL GUIDE ===== -->
+<section id="install">
+  <div class="grid-bg" style="opacity:0.4"></div>
+  <div class="container">
+    <div class="section-label fade-up">02.5 · 用 Kiro 部署 OpenClaw</div>
+    <div class="gold-quote fade-up delay-1">
+      「把 GitHub 链接发给 Kiro，<span>让它读懂，然后开聊。</span>」
+    </div>
+    <p class="fade-up delay-2" style="font-size:16px; color:var(--text-dim); max-width:620px; line-height:1.7; margin-bottom:48px;">
+      不需要手打命令。把 OpenClaw 的 GitHub 链接扔给 Kiro，
+      让它先读懂项目背景，再用自然语言一路对话到上线——全程约 8 分钟。
+    </p>
+
+    <!-- 四步核心流程 -->
+    <div class="fade-up delay-2" style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:16px;margin-bottom:48px;">
+
+      <!-- Step 1: 下载 Kiro -->
+      <div style="border:1px solid var(--border);background:rgba(255,255,255,0.018);padding:24px;position:relative;">
+        <div style="position:absolute;top:0;left:0;right:0;height:2px;background:var(--orange);opacity:0.7;"></div>
+        <div style="font-family:var(--mono);font-size:9px;letter-spacing:0.2em;color:var(--text-dim);text-transform:uppercase;margin-bottom:14px;">① 先装 Kiro</div>
+        <div style="font-family:var(--mono);font-size:15px;font-weight:700;color:var(--text);margin-bottom:16px;">下载 Kiro IDE</div>
+        <div style="font-family:var(--mono);font-size:12px;color:var(--text-dim);line-height:1.8;margin-bottom:16px;">
+          macOS / Windows — 图形安装包<br>
+          Linux / macOS CLI：
+        </div>
+        <div style="background:rgba(0,0,0,0.5);border:1px solid rgba(255,107,53,0.2);border-left:3px solid var(--orange);padding:10px 14px;font-family:var(--mono);font-size:11px;color:var(--cyan);line-height:1.6;margin-bottom:14px;">
+          curl -fsSL https://cli.kiro.dev/install | bash
+        </div>
+        <div style="border:1px solid rgba(255,107,53,0.4);padding:8px 14px;display:flex;align-items:center;gap:8px;">
+          <span style="font-family:var(--mono);font-size:9px;letter-spacing:0.1em;color:var(--orange);">下载地址</span>
+          <span style="font-family:var(--mono);font-size:13px;font-weight:700;color:var(--text);">kiro.dev/downloads</span>
+        </div>
+      </div>
+
+      <!-- Step 2a: 本地版 -->
+      <div style="border:1px solid rgba(0,212,170,0.3);background:rgba(0,212,170,0.04);padding:24px;position:relative;">
+        <div style="position:absolute;top:0;left:0;right:0;height:2px;background:var(--cyan);"></div>
+        <div style="font-family:var(--mono);font-size:9px;letter-spacing:0.2em;color:var(--cyan);text-transform:uppercase;margin-bottom:14px;">② 本地安装（Mac / Win / Linux）</div>
+        <div style="font-family:var(--mono);font-size:14px;font-weight:700;color:var(--text);margin-bottom:12px;">解压 GitHub 项目，在 Kiro 中 Open Workspace from Folder</div>
+        <div style="background:rgba(0,212,170,0.08);border:1px solid rgba(0,212,170,0.4);padding:12px 14px;font-family:var(--mono);font-size:12px;font-weight:700;color:var(--cyan);margin-bottom:12px;word-break:break-all;">
+          github.com/openclaw/openclaw
+        </div>
+        <div style="font-family:var(--mono);font-size:11px;color:var(--text-dim);line-height:1.9;">
+          <span style="color:var(--cyan);">运行环境</span> Node.js &ge; 18<br>
+          <span style="color:var(--cyan);">平台</span> macOS &middot; Windows &middot; Linux<br>
+          <span style="color:var(--cyan);">文档</span> docs.openclaw.ai
+        </div>
+      </div>
+
+      <!-- Step 2b: EC2 版 -->
+      <div style="border:1px solid rgba(245,158,11,0.3);background:rgba(245,158,11,0.03);padding:24px;position:relative;">
+        <div style="position:absolute;top:0;left:0;right:0;height:2px;background:#F59E0B;"></div>
+        <div style="font-family:var(--mono);font-size:9px;letter-spacing:0.2em;color:#F59E0B;text-transform:uppercase;margin-bottom:14px;">② 部署到 AWS EC2</div>
+        <div style="font-family:var(--mono);font-size:14px;font-weight:700;color:var(--text);margin-bottom:12px;">在 Kiro 中打开项目文件夹</div>
+        <div style="background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.4);padding:12px 14px;font-family:var(--mono);font-size:10px;font-weight:700;color:#F59E0B;margin-bottom:12px;word-break:break-all;">
+          github.com/aws-samples/sample-OpenClaw-on-AWS-with-Bedrock
+        </div>
+        <div style="font-family:var(--mono);font-size:11px;color:var(--text-dim);line-height:1.9;">
+          <span style="color:#F59E0B;">AI 引擎</span> Amazon Bedrock<br>
+          <span style="color:#F59E0B;">部署方式</span> CloudFormation 一键<br>
+          约 8 分钟上线
+        </div>
+      </div>
+
+      <!-- Step 3: 开聊 -->
+      <div style="border:1px solid rgba(74,222,128,0.3);background:rgba(74,222,128,0.03);padding:24px;position:relative;">
+        <div style="position:absolute;top:0;left:0;right:0;height:2px;background:#4ADE80;"></div>
+        <div style="font-family:var(--mono);font-size:9px;letter-spacing:0.2em;color:#4ADE80;text-transform:uppercase;margin-bottom:14px;">③ 开聊，告诉 Kiro 干什么</div>
+        <div style="font-family:var(--mono);font-size:15px;font-weight:700;color:var(--text);margin-bottom:14px;">自然语言示例</div>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <div style="background:rgba(255,107,53,0.08);border:1px solid rgba(255,107,53,0.2);padding:8px 12px;font-family:var(--mono);font-size:11px;color:var(--text);line-height:1.5;">
+            「请读取上面的 GitHub 链接，了解项目后告诉我」
+          </div>
+          <div style="background:rgba(255,107,53,0.08);border:1px solid rgba(255,107,53,0.2);padding:8px 12px;font-family:var(--mono);font-size:11px;color:var(--text);line-height:1.5;">
+            「帮我部署 OpenClaw」
+          </div>
+          <div style="background:rgba(255,107,53,0.08);border:1px solid rgba(255,107,53,0.2);padding:8px 12px;font-family:var(--mono);font-size:11px;color:var(--text);line-height:1.5;">
+            「把模型换成 DeepSeek R1」/ 「加一个飞书频道」
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+
+<div class="section-divider"></div>
+
+<!-- ===== SECTION: DEPLOY COMPARE ===== -->
+<section id="deploy-compare">
+  <div class="grid-bg" style="opacity:0.35"></div>
+  <div class="container">
+    <div class="section-label fade-up">03 · 云端部署方案对比</div>
+    <div class="gold-quote fade-up delay-1">
+      「<span>一个框架，三种姿势</span>——从个人到企业，按需选型。」
+    </div>
+    <p class="fade-up delay-2" style="font-size:16px; color:var(--text-dim); max-width:640px; line-height:1.7; margin-bottom:56px;">
+      OpenClaw 在 AWS 上有三种主流部署模式。相同的 AI 能力，不同的基础设施架构，
+      适合不同规模和安全要求的场景。
+    </p>
+
+    <!-- ── 三卡片并排 ── -->
+    <div class="fade-up delay-2" style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-bottom:48px;">
+
+      <!-- EC2 -->
+      <div style="border:1px solid rgba(255,107,53,0.4);background:rgba(255,107,53,0.04);padding:28px;position:relative;display:flex;flex-direction:column;gap:0;">
+        <div style="position:absolute;top:0;left:0;right:0;height:3px;background:var(--orange);"></div>
+        <div style="font-family:var(--mono);font-size:9px;letter-spacing:0.2em;color:var(--orange);text-transform:uppercase;margin-bottom:12px;">方案 A · On EC2</div>
+        <div style="font-family:var(--mono);font-size:18px;font-weight:800;color:var(--text);margin-bottom:6px;">单机部署</div>
+        <div style="font-family:var(--mono);font-size:12px;color:var(--text-dim);margin-bottom:20px;">个人 / 小团队 · 最快上手</div>
+
+        <!-- 架构流 -->
+        <div style="background:rgba(0,0,0,0.4);padding:12px 14px;font-family:var(--mono);font-size:10px;color:var(--text-dim);line-height:2;margin-bottom:20px;border:1px solid rgba(255,107,53,0.15);">
+          📱 IM 平台<br>
+          <span style="color:rgba(255,107,53,0.4);">↓</span><br>
+          🖥️ <span style="color:var(--orange);">EC2 Gateway</span><br>
+          <span style="color:rgba(255,107,53,0.4);">↓</span><br>
+          ⚡ Amazon Bedrock
+        </div>
+
+        <!-- 指标 -->
+        <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:20px;">
+          <div style="display:flex;justify-content:space-between;font-family:var(--mono);font-size:11px;padding:6px 10px;background:rgba(0,0,0,0.3);border:1px solid var(--border);">
+            <span style="color:var(--text-dim);">上手时间</span>
+            <span style="color:var(--orange);font-weight:700;">~8 分钟</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-family:var(--mono);font-size:11px;padding:6px 10px;background:rgba(0,0,0,0.3);border:1px solid var(--border);">
+            <span style="color:var(--text-dim);">多租户隔离</span>
+            <span style="color:rgba(255,107,53,0.6);">❌ 无</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-family:var(--mono);font-size:11px;padding:6px 10px;background:rgba(0,0,0,0.3);border:1px solid var(--border);">
+            <span style="color:var(--text-dim);">支持频道</span>
+            <span style="color:var(--orange);font-weight:700;">20+</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-family:var(--mono);font-size:11px;padding:6px 10px;background:rgba(0,0,0,0.3);border:1px solid var(--border);">
+            <span style="color:var(--text-dim);">生产就绪</span>
+            <span style="color:#4ADE80;font-weight:700;">✅</span>
+          </div>
+        </div>
+
+        <div style="font-family:var(--mono);font-size:11px;color:var(--text-dim);line-height:1.7;flex:1;">
+          ✅ Kiro 全程引导，无需手打命令<br>
+          ✅ 架构最透明，便于调试<br>
+          ✅ 成本可预测<br>
+          ⚠️ 无用户级隔离<br>
+          ⚠️ 空闲持续计费
+        </div>
+        <div style="margin-top:16px;padding-top:14px;border-top:1px solid rgba(255,107,53,0.2);">
+          <a href="https://github.com/aws-samples/sample-OpenClaw-on-AWS-with-Bedrock" target="_blank" style="font-family:var(--mono);font-size:10px;color:var(--orange);text-decoration:none;letter-spacing:0.05em;">🐙 aws-samples/sample-OpenClaw-on-AWS-with-Bedrock →</a>
+        </div>
+      </div>
+
+      <!-- EKS -->
+      <div style="border:1px solid rgba(167,139,250,0.4);background:rgba(167,139,250,0.04);padding:28px;position:relative;display:flex;flex-direction:column;gap:0;">
+        <div style="position:absolute;top:0;left:0;right:0;height:3px;background:#A78BFA;"></div>
+        <div style="font-family:var(--mono);font-size:9px;letter-spacing:0.2em;color:#A78BFA;text-transform:uppercase;margin-bottom:12px;">方案 B · On EKS</div>
+        <div style="font-family:var(--mono);font-size:18px;font-weight:800;color:var(--text);margin-bottom:6px;">Kubernetes</div>
+        <div style="font-family:var(--mono);font-size:12px;color:var(--text-dim);margin-bottom:20px;">中型团队 · 已有 k8s 基础设施</div>
+
+        <!-- 架构流 -->
+        <div style="background:rgba(0,0,0,0.4);padding:12px 14px;font-family:var(--mono);font-size:10px;color:var(--text-dim);line-height:2;margin-bottom:20px;border:1px solid rgba(167,139,250,0.15);">
+          📱 IM 平台<br>
+          <span style="color:rgba(167,139,250,0.4);">↓</span><br>
+          🔀 <span style="color:#A78BFA;">ALB / Ingress</span><br>
+          <span style="color:rgba(167,139,250,0.4);">↓</span><br>
+          📦 <span style="color:#A78BFA;">EKS Pod</span>（OpenClaw）<br>
+          <span style="color:rgba(167,139,250,0.4);">↓</span><br>
+          ⚡ Amazon Bedrock
+        </div>
+
+        <!-- 指标 -->
+        <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:20px;">
+          <div style="display:flex;justify-content:space-between;font-family:var(--mono);font-size:11px;padding:6px 10px;background:rgba(0,0,0,0.3);border:1px solid var(--border);">
+            <span style="color:var(--text-dim);">上手时间</span>
+            <span style="color:#A78BFA;font-weight:700;">~1 天</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-family:var(--mono);font-size:11px;padding:6px 10px;background:rgba(0,0,0,0.3);border:1px solid var(--border);">
+            <span style="color:var(--text-dim);">多租户隔离</span>
+            <span style="color:#A78BFA;">⚠️ Pod 级</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-family:var(--mono);font-size:11px;padding:6px 10px;background:rgba(0,0,0,0.3);border:1px solid var(--border);">
+            <span style="color:var(--text-dim);">支持频道</span>
+            <span style="color:#A78BFA;font-weight:700;">20+</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-family:var(--mono);font-size:11px;padding:6px 10px;background:rgba(0,0,0,0.3);border:1px solid var(--border);">
+            <span style="color:var(--text-dim);">生产就绪</span>
+            <span style="color:#4ADE80;font-weight:700;">✅</span>
+          </div>
+        </div>
+
+        <div style="font-family:var(--mono);font-size:11px;color:var(--text-dim);line-height:1.7;flex:1;">
+          ✅ 与现有 CI/CD 无缝融合<br>
+          ✅ 滚动更新 / 自动回滚<br>
+          ✅ Prometheus + 标准监控生态<br>
+          
+          ⚠️ 运维复杂度高
+        </div>
+        <div style="margin-top:16px;padding-top:14px;border-top:1px solid rgba(167,139,250,0.2);">
+          <a href="https://github.com/openclaw-rocks/k8s-operator" target="_blank" style="font-family:var(--mono);font-size:10px;color:#A78BFA;text-decoration:none;letter-spacing:0.05em;">🐙 openclaw-rocks/k8s-operator →</a>
+        </div>
+      </div>
+
+      <!-- AgentCore -->
+      <div style="border:1px solid rgba(0,212,170,0.4);background:rgba(0,212,170,0.04);padding:28px;position:relative;display:flex;flex-direction:column;gap:0;">
+        <div style="position:absolute;top:0;left:0;right:0;height:3px;background:var(--cyan);"></div>
+        <div style="position:absolute;top:14px;right:14px;background:rgba(0,212,170,0.15);border:1px solid rgba(0,212,170,0.4);padding:2px 8px;font-family:var(--mono);font-size:9px;color:var(--cyan);letter-spacing:0.1em;">EXPERIMENTAL</div>
+        <div style="font-family:var(--mono);font-size:9px;letter-spacing:0.2em;color:var(--cyan);text-transform:uppercase;margin-bottom:12px;">方案 C · On AgentCore</div>
+        <div style="font-family:var(--mono);font-size:18px;font-weight:800;color:var(--text);margin-bottom:6px;">多租户 Serverless</div>
+        <div style="font-family:var(--mono);font-size:12px;color:var(--text-dim);margin-bottom:20px;">企业级 · 50人以上 · 按用付费</div>
+
+        <!-- 架构流 -->
+        <div style="background:rgba(0,0,0,0.4);padding:12px 14px;font-family:var(--mono);font-size:10px;color:var(--text-dim);line-height:2;margin-bottom:20px;border:1px solid rgba(0,212,170,0.15);">
+          📱 IM 平台<br>
+          <span style="color:rgba(0,212,170,0.4);">↓</span><br>
+          🔀 <span style="color:var(--cyan);">API GW → Router λ</span><br>
+          <span style="color:rgba(0,212,170,0.4);">↓ 每用户独立</span><br>
+          🔒 <span style="color:var(--cyan);">AgentCore microVM</span><br>
+          <span style="color:rgba(0,212,170,0.4);">↓</span><br>
+          ⚡ Amazon Bedrock
+        </div>
+
+        <!-- 指标 -->
+        <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:20px;">
+          <div style="display:flex;justify-content:space-between;font-family:var(--mono);font-size:11px;padding:6px 10px;background:rgba(0,0,0,0.3);border:1px solid var(--border);">
+            <span style="color:var(--text-dim);">上手时间</span>
+            <span style="color:var(--cyan);font-weight:700;">~1-2 天</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-family:var(--mono);font-size:11px;padding:6px 10px;background:rgba(0,0,0,0.3);border:1px solid var(--border);">
+            <span style="color:var(--text-dim);">多租户隔离</span>
+            <span style="color:#4ADE80;font-weight:700;">✅ Firecracker</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-family:var(--mono);font-size:11px;padding:6px 10px;background:rgba(0,0,0,0.3);border:1px solid var(--border);">
+            <span style="color:var(--text-dim);">支持频道</span>
+            <span style="color:var(--cyan);font-weight:700;">Telegram + Slack</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-family:var(--mono);font-size:11px;padding:6px 10px;background:rgba(0,0,0,0.3);border:1px solid var(--border);">
+            <span style="color:var(--text-dim);">生产就绪</span>
+            <span style="color:rgba(255,107,53,0.8);">⚠️ 实验性</span>
+          </div>
+        </div>
+
+        <div style="font-family:var(--mono);font-size:11px;color:var(--text-dim);line-height:1.7;flex:1;">
+          ✅ Firecracker 微虚机级用户隔离<br>
+          ✅ Serverless，闲置零费用<br>
+          ✅ IT 统一管理 Skill & Credential<br>
+          ✅ Bedrock Guardrails 内置安全<br>
+          ⚠️ 目前实验性，不推荐生产
+        </div>
+        <div style="margin-top:16px;padding-top:14px;border-top:1px solid rgba(0,212,170,0.2);">
+          <a href="https://github.com/aws-samples/sample-host-openclaw-on-amazon-bedrock-agentcore" target="_blank" style="font-family:var(--mono);font-size:10px;color:var(--cyan);text-decoration:none;letter-spacing:0.05em;">🐙 aws-samples/sample-host-openclaw-on-amazon-bedrock-agentcore →</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- cost comparison block hidden -->
+    <!-- ── 决策树 ── -->
+    <div class="fade-up delay-4" style="border:1px solid var(--border);background:rgba(255,255,255,0.015);padding:28px;">
+      <div style="font-family:var(--mono);font-size:10px;letter-spacing:0.2em;color:var(--text-dim);text-transform:uppercase;margin-bottom:20px;">选型决策树</div>
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <div style="display:flex;align-items:center;gap:16px;padding:12px 16px;border:1px solid rgba(255,107,53,0.25);background:rgba(255,107,53,0.04);">
+          <span style="font-family:var(--mono);font-size:18px;">1️⃣</span>
+          <div>
+            <span style="font-family:var(--mono);font-size:12px;color:var(--text-dim);">规模 &lt;5 人，快速验证？</span>
+            <span style="font-family:var(--mono);font-size:12px;font-weight:700;color:var(--orange);margin-left:16px;">→ On EC2，Kiro 8 分钟上线</span>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:16px;padding:12px 16px;border:1px solid rgba(167,139,250,0.25);background:rgba(167,139,250,0.04);">
+          <span style="font-family:var(--mono);font-size:18px;">2️⃣</span>
+          <div>
+            <span style="font-family:var(--mono);font-size:12px;color:var(--text-dim);">已有 EKS 平台，需要统一管理？</span>
+            <span style="font-family:var(--mono);font-size:12px;font-weight:700;color:#A78BFA;margin-left:16px;">→ On EKS，接入 k8s operator</span>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:16px;padding:12px 16px;border:1px solid rgba(0,212,170,0.25);background:rgba(0,212,170,0.04);">
+          <span style="font-family:var(--mono);font-size:18px;">3️⃣</span>
+          <div>
+            <span style="font-family:var(--mono);font-size:12px;color:var(--text-dim);">50 人以上，需要隔离 + 成本最优？</span>
+            <span style="font-family:var(--mono);font-size:12px;font-weight:700;color:var(--cyan);margin-left:16px;">→ On AgentCore（PoC 验证后推广）</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- ===== SECTION 3: NOVA SONIC ===== -->
+<section id="sonic">
+  <div class="container">
+    <div class="section-label fade-up">03 · Nova Sonic</div>
+    <div class="gold-quote fade-up delay-1">
+      「说话即命令，<span style="color:var(--cyan)">语音即入口。</span>」
+    </div>
+    <p class="fade-up delay-2" style="font-size:16px; color:var(--text-dim); max-width:560px; line-height:1.7; margin-bottom:48px;">
+      Amazon Nova Sonic 实现真正的实时双向语音对话。打开页面，开口说话，
+      AI 立刻理解并回应——延迟低到感觉不出来。
+    </p>
+
+    <!-- AI Avatar + 拟人化语音交互可视化 -->
+    <div class="fade-up delay-2" style="display:flex;align-items:center;gap:48px;margin-bottom:48px;flex-wrap:wrap;">
+      <!-- 用户侧 -->
+      <div style="display:flex;flex-direction:column;align-items:center;gap:10px;">
+        <div style="width:64px;height:64px;border-radius:50%;border:2px solid rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;font-size:28px;background:rgba(255,255,255,0.05);">🧑‍💼</div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:rgba(255,255,255,0.35);letter-spacing:0.1em;">USER</div>
+        <div style="display:flex;gap:3px;align-items:center;height:18px;">
+          <div class="waveform-bar" style="width:3px;background:rgba(255,255,255,0.3);"></div>
+          <div class="waveform-bar" style="width:3px;background:rgba(255,255,255,0.3);"></div>
+          <div class="waveform-bar" style="width:3px;background:rgba(255,255,255,0.3);"></div>
+          <div class="waveform-bar" style="width:3px;background:rgba(255,255,255,0.3);"></div>
+          <div class="waveform-bar" style="width:3px;background:rgba(255,255,255,0.3);"></div>
+        </div>
+      </div>
+      <!-- 双向箭头 -->
+      <div style="display:flex;flex-direction:column;align-items:center;gap:6px;">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:rgba(0,212,170,0.6);">PCM ──────▶</div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:rgba(255,107,53,0.6);">◀────── Audio+Text</div>
+      </div>
+      <!-- AI 头像 -->
+      <div style="display:flex;flex-direction:column;align-items:center;gap:10px;">
+        <!-- 发光圆形头像 -->
+        <div style="position:relative;width:80px;height:80px;">
+          <!-- 外环光晕 -->
+          <div style="position:absolute;inset:-8px;border-radius:50%;border:1px solid rgba(255,107,53,0.2);animation:pulse-ring 2s ease-in-out infinite;"></div>
+          <div style="position:absolute;inset:-16px;border-radius:50%;border:1px solid rgba(255,107,53,0.1);animation:pulse-ring 2s ease-in-out infinite 0.5s;"></div>
+          <!-- 主圆 -->
+          <div style="width:80px;height:80px;border-radius:50%;border:2px solid rgba(255,107,53,0.7);background:radial-gradient(circle at 35% 35%, rgba(255,107,53,0.25), rgba(5,5,8,0.9));display:flex;align-items:center;justify-content:center;font-size:32px;box-shadow:0 0 20px rgba(255,107,53,0.3);">🦞</div>
+        </div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:rgba(255,107,53,0.8);letter-spacing:0.15em;">NOVA SONIC</div>
+        <!-- 说话时的波形 -->
+        <div style="display:flex;gap:3px;align-items:center;height:18px;">
+          <div class="waveform-bar" style="width:3px;background:var(--orange);"></div>
+          <div class="waveform-bar" style="width:3px;background:var(--orange);"></div>
+          <div class="waveform-bar" style="width:3px;background:var(--orange);"></div>
+          <div class="waveform-bar" style="width:3px;background:var(--orange);"></div>
+          <div class="waveform-bar" style="width:3px;background:var(--orange);"></div>
+          <div class="waveform-bar" style="width:3px;background:var(--orange);"></div>
+          <div class="waveform-bar" style="width:3px;background:var(--orange);"></div>
+        </div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:9px;color:rgba(0,212,170,0.7);letter-spacing:0.1em;">● LISTENING</div>
+      </div>
+    </div>
+
+    <!-- Architecture Diagram -->
+    <div class="arch-diagram fade-up delay-3">
+      <div class="arch-node">
+        <span class="node-icon">🎤</span>
+        <div class="node-label">用户语音</div>
+        <div class="node-sub">WebRTC / Mic</div>
+      </div>
+
+      <div class="arch-arrow">
+        <div class="arrow-line"></div>
+        <div class="arrow-label">PCM Stream</div>
+      </div>
+
+      <div class="arch-node highlight" style="position:relative; padding-top:30px;">
+        <div class="arch-node-tag">AWS Bedrock</div>
+        <span class="node-icon">⚡</span>
+        <div class="node-label">Nova Sonic</div>
+        <div class="node-sub">实时语音大模型</div>
+      </div>
+
+      <div class="arch-arrow">
+        <div class="arrow-line"></div>
+        <div class="arrow-label">Audio + Text</div>
+      </div>
+
+      <div class="arch-node">
+        <span class="node-icon">💬</span>
+        <div class="node-label">实时回复</div>
+        <div class="node-sub">语音 + 文字流</div>
+      </div>
+
+      <div class="arch-arrow">
+        <div class="arrow-line"></div>
+        <div class="arrow-label">Action</div>
+      </div>
+
+      <div class="arch-node">
+        <span class="node-icon">🦾</span>
+        <div class="node-label">OpenClaw</div>
+        <div class="node-sub">执行 / 联动</div>
+      </div>
+    </div>
+
+    <div class="fade-up delay-4">
+      <a href="https://sonic.aolei.org/?token=NDUj2waNdzr-8Utf" target="_blank" class="sonic-btn">
+        <span>▶ 立即体验 Nova Sonic</span>
+      </a>
+      <div style="margin-top:16px; font-family:var(--mono); font-size:11px; color:var(--text-dim);">
+        → sonic.aolei.org · 打开麦克风，直接开聊
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- ===== SECTION 4: NOVA CANVAS ===== -->
+<section id="canvas-section">
+  <div class="grid-bg" style="opacity:0.3"></div>
+  <div class="container">
+    <div class="section-label fade-up">04 · Nova Canvas</div>
+    <div class="gold-quote fade-up delay-1">
+      「一句话，<span>变成一幅画。</span>」
+    </div>
+    <p class="fade-up delay-2" style="font-size:16px; color:var(--text-dim); max-width:560px; line-height:1.7; margin-bottom:56px;">
+      Amazon Nova Canvas 是 AWS 自研、原生集成 Bedrock 的企业级文生图模型。输入一句描述，
+      秒出专业级图像，支持精确控制、图像编辑、风格迁移。
+    </p>
+
+    <div class="canvas-layout">
+      <!-- Architecture -->
+      <div class="canvas-arch fade-up delay-2">
+        <div style="font-family:var(--mono); font-size:11px; color:var(--text-dim); letter-spacing:0.1em; margin-bottom:20px;">ARCHITECTURE</div>
+
+        <div class="canvas-arch-row">
+          <div class="arch-node" style="min-width:130px; padding:16px 20px;">
+            <span class="node-icon" style="font-size:22px;">📝</span>
+            <div class="node-label">Text Prompt</div>
+            <div class="node-sub">中英文均可</div>
+          </div>
+          <div class="arch-arrow" style="padding:0 8px;">
+            <div class="arrow-line" style="background:linear-gradient(90deg,var(--orange),rgba(255,107,53,0.3))"></div>
+            <div class="arrow-label" style="color:var(--orange)">JSON</div>
+          </div>
+          <div class="arch-node" style="min-width:130px; padding:16px 20px; position:relative; padding-top:28px; border-color:rgba(255,107,53,0.4); background:rgba(255,107,53,0.04);">
+            <div style="position:absolute;top:-1px;left:50%;transform:translateX(-50%);background:var(--orange);color:var(--bg);font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:0.1em;padding:2px 8px;white-space:nowrap;">AWS Bedrock</div>
+            <span class="node-icon" style="font-size:22px;">🎨</span>
+            <div class="node-label">Nova Canvas</div>
+            <div class="node-sub">文生图引擎</div>
+          </div>
+        </div>
+
+        <div style="padding-left:65px; padding-top:4px; padding-bottom:4px;">
+          <div style="display:flex;align-items:center;gap:0;">
+            <div style="width:1px;height:36px;background:linear-gradient(to bottom,var(--orange),rgba(255,107,53,0.3));"></div>
+          </div>
+          <div style="width:0;height:0;border-top:8px solid var(--orange);border-left:4px solid transparent;border-right:4px solid transparent;margin-left:-4px;margin-top:-1px;"></div>
+        </div>
+
+        <div class="canvas-arch-row">
+          <div class="arch-node" style="min-width:130px; padding:16px 20px;">
+            <span class="node-icon" style="font-size:22px;">🖼️</span>
+            <div class="node-label">image_base64</div>
+            <div class="node-sub">1024×1024 PNG</div>
+          </div>
+          <div class="arch-arrow" style="padding:0 8px;">
+            <div class="arrow-line" style="background:linear-gradient(90deg,var(--orange),rgba(255,107,53,0.3))"></div>
+            <div class="arrow-label" style="color:var(--orange)">Render</div>
+          </div>
+          <div class="arch-node" style="min-width:130px; padding:16px 20px;">
+            <span class="node-icon" style="font-size:22px;">🖥️</span>
+            <div class="node-label">前端显示</div>
+            <div class="node-sub">即时渲染</div>
+          </div>
+        </div>
+
+        <!-- Specs -->
+        <div style="margin-top:32px; border:1px solid var(--border); padding:20px; background:rgba(0,0,0,0.3);">
+          <div style="font-family:var(--mono);font-size:10px;color:var(--text-dim);letter-spacing:0.15em;margin-bottom:12px;">SPECS</div>
+          <div style="font-family:var(--mono);font-size:12px;line-height:2;color:var(--text-dim);">
+            <span style="color:var(--orange);">model_id</span> &nbsp;amazon.nova-canvas-v1:0<br>
+            <span style="color:var(--orange);">resolution</span> up to 2048 × 2048<br>
+            <span style="color:var(--orange);">format</span> &nbsp;&nbsp;PNG / JPEG<br>
+            <span style="color:var(--orange);">latency</span> &nbsp;~5-10s
+          </div>
+        </div>
+      </div>
+
+      <!-- Demo -->
+      <div class="canvas-demo fade-up delay-3">
+        <div class="canvas-frame">
+          <div class="canvas-placeholder" id="canvas-placeholder">
+            <!-- 四角设计感角标 -->
+            <div style="position:absolute;top:16px;left:16px;width:24px;height:24px;border-top:2px solid rgba(255,107,53,0.6);border-left:2px solid rgba(255,107,53,0.6);"></div>
+            <div style="position:absolute;top:16px;right:16px;width:24px;height:24px;border-top:2px solid rgba(255,107,53,0.6);border-right:2px solid rgba(255,107,53,0.6);"></div>
+            <div style="position:absolute;bottom:16px;left:16px;width:24px;height:24px;border-bottom:2px solid rgba(255,107,53,0.6);border-left:2px solid rgba(255,107,53,0.6);"></div>
+            <div style="position:absolute;bottom:16px;right:16px;width:24px;height:24px;border-bottom:2px solid rgba(255,107,53,0.6);border-right:2px solid rgba(255,107,53,0.6);"></div>
+            <!-- 中央占位 -->
+            <div style="display:flex;flex-direction:column;align-items:center;gap:12px;">
+              <div style="width:48px;height:48px;border:1px solid rgba(255,107,53,0.3);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;">🎨</div>
+              <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:rgba(255,107,53,0.5);letter-spacing:0.2em;">CANVAS READY</div>
+              <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:rgba(255,255,255,0.2);letter-spacing:0.1em;">输入描述 → 生成画报</div>
+            </div>
+          </div>
+          <img id="canvas-result" alt="Generated Image">
+          <div id="canvas-loading">
+            <div class="spinner"></div>
+          </div>
+        </div>
+
+        <div class="canvas-input-group">
+          <input
+            type="text"
+            id="canvas-prompt"
+            placeholder="e.g. 宇宙中漂浮的荧光龙虾，环绕橙色数据流，电路板星座，超细节，电影感光效"
+          >
+          <button class="canvas-gen-btn" id="canvas-btn" onclick="generateCanvas()">
+            GEN →
+          </button>
+        </div>
+        <div class="canvas-error" id="canvas-error"></div>
+
+        <div style="font-family:var(--mono);font-size:11px;color:var(--text-dim);line-height:1.8;">
+          <span style="color:var(--orange);">POST</span> /api/canvas<br>
+          <span style="color:var(--text-dim);">→ returns image_base64</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- ===== SECTION 5: MORE ===== -->
+<section id="more">
+  <div class="container">
+    <div class="section-label fade-up">05 · 更多场景</div>
+    <div class="gold-quote fade-up delay-1">
+      「一个助手，覆盖<span>工作与生活</span>的全场景。」
+    </div>
+    <p class="fade-up delay-2" style="font-size:16px; color:var(--text-dim); max-width:640px; line-height:1.7;">
+      OpenClaw 不只是工具，是跑在 AWS 上的个人智能体基础设施——
+      从代码到家居，从网站到笔记，处处皆入口。
+    </p>
+
+    <div class="more-grid">
+      <!-- Card 1: AI建站 -->
+      <div class="more-card fade-up delay-1">
+        <span class="more-card-icon">🌐</span>
+        <div class="more-card-title">AI 建站</div>
+        <div class="more-card-desc">
+          一句话生成完整网站，自动部署到 S3 + CloudFront，
+          全球加速，HTTPS 默认，10 分钟上线。
+        </div>
+        <div class="mini-arch">
+          <div class="mini-arch-row">
+            <div class="mini-node">需求描述</div>
+            <span class="mini-arrow">→</span>
+            <div class="mini-node orange">Claude</div>
+            <span class="mini-arrow">→</span>
+            <div class="mini-node">HTML/CSS/JS</div>
+          </div>
+          <div class="mini-arch-row">
+            <div class="mini-node">生成产物</div>
+            <span class="mini-arrow">→</span>
+            <div class="mini-node cyan">S3 + CF</div>
+            <span class="mini-arrow">→</span>
+            <div class="mini-node">aolei.org</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 2: 智能家居 -->
+      <div class="more-card fade-up delay-2">
+        <span class="more-card-icon">🏠</span>
+        <div class="more-card-title">智能家居</div>
+        <div class="more-card-desc">
+          「关掉卧室灯，空调调到 26 度」——OpenClaw 接入
+          Home Assistant，语言直达设备，不需要 App。
+        </div>
+        <div class="mini-arch">
+          <div class="mini-arch-row">
+            <div class="mini-node">语音 / 文字</div>
+            <span class="mini-arrow">→</span>
+            <div class="mini-node orange">OpenClaw</div>
+          </div>
+          <div class="mini-arch-row">
+            <div class="mini-node orange">OpenClaw</div>
+            <span class="mini-arrow">→</span>
+            <div class="mini-node cyan">HA API</div>
+            <span class="mini-arrow">→</span>
+            <div class="mini-node">设备</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 3: 笔记同步 -->
+      <div class="more-card fade-up delay-3">
+        <span class="more-card-icon">📝</span>
+        <div class="more-card-title">笔记同步</div>
+        <div class="more-card-desc">
+          聊天中说「记下来」，自动写入 Obsidian vault，
+          同步到 S3，手机端实时可查——记忆不再丢失。
+        </div>
+        <div class="mini-arch">
+          <div class="mini-arch-row">
+            <div class="mini-node">「记下来：...」</div>
+            <span class="mini-arrow">→</span>
+            <div class="mini-node orange">OpenClaw</div>
+          </div>
+          <div class="mini-arch-row">
+            <div class="mini-node orange">OpenClaw</div>
+            <span class="mini-arrow">→</span>
+            <div class="mini-node cyan">S3 Vault</div>
+            <span class="mini-arrow">→</span>
+            <div class="mini-node">手机</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== FOOTER ===== -->
+<footer>
+  <div class="container">
+    <div class="footer-logo">OpenClaw × AWS</div>
+    <div class="footer-meta">
+      POWERED BY AMAZON BEDROCK &nbsp;·&nbsp; CLAUDE &nbsp;·&nbsp; NOVA SONIC &nbsp;·&nbsp; NOVA CANVAS
+    </div>
+    <div class="footer-meta" style="margin-top:8px; opacity:0.5;">
+      © 2026 · SYSTEM UPTIME 99.9% · ALL SYSTEMS NOMINAL
+    </div>
+  </div>
+</footer>
+
+<!-- ===== JAVASCRIPT ===== -->
+<script>
+// ===== PARTICLE CANVAS =====
+(function() {
+  const canvas = document.getElementById('hero-canvas');
+  const ctx = canvas.getContext('2d');
+  let W, H, particles = [], animId;
+  const PARTICLE_COUNT = 80;
+  const CONNECTION_DIST = 140;
+  const SPEED = 0.4;
+
+  function resize() {
+    W = canvas.width = canvas.offsetWidth;
+    H = canvas.height = canvas.offsetHeight;
+  }
+
+  function Particle() {
+    this.x = Math.random() * W;
+    this.y = Math.random() * H;
+    this.vx = (Math.random() - 0.5) * SPEED;
+    this.vy = (Math.random() - 0.5) * SPEED;
+    this.r = Math.random() * 1.5 + 0.5;
+    this.alpha = Math.random() * 0.5 + 0.2;
+  }
+
+  function init() {
+    resize();
+    particles = [];
+    for (let i = 0; i < PARTICLE_COUNT; i++) {
+      particles.push(new Particle());
+    }
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+
+    // Draw connections
+    for (let i = 0; i < particles.length; i++) {
+      for (let j = i + 1; j < particles.length; j++) {
+        const p1 = particles[i], p2 = particles[j];
+        const dx = p1.x - p2.x, dy = p1.y - p2.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < CONNECTION_DIST) {
+          const alpha = (1 - dist / CONNECTION_DIST) * 0.15;
+          ctx.beginPath();
+          ctx.strokeStyle = `rgba(255, 255, 255, ${alpha})`;
+          ctx.lineWidth = 0.5;
+          ctx.moveTo(p1.x, p1.y);
+          ctx.lineTo(p2.x, p2.y);
+          ctx.stroke();
+        }
+      }
+    }
+
+    // Draw particles
+    for (let p of particles) {
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(255, 255, 255, ${p.alpha})`;
+      ctx.fill();
+
+      // Move
+      p.x += p.vx;
+      p.y += p.vy;
+      if (p.x < 0 || p.x > W) p.vx *= -1;
+      if (p.y < 0 || p.y > H) p.vy *= -1;
+    }
+
+    animId = requestAnimationFrame(draw);
+  }
+
+  window.addEventListener('resize', () => {
+    cancelAnimationFrame(animId);
+    init();
+    draw();
+  });
+
+  init();
+  draw();
+})();
+
+// ===== TYPEWRITER =====
+(function() {
+  const lines = [
+    'Powered by Kiro, EC2, Amazon Bedrock'
+  ];
+  let lineIdx = 0, charIdx = 0, deleting = false, pauseTimer = null;
+  const el = document.getElementById('typewriter-text');
+
+  function type() {
+    if (pauseTimer) return;
+    const current = lines[lineIdx];
+    if (!deleting) {
+      charIdx++;
+      el.textContent = current.slice(0, charIdx);
+      if (charIdx === current.length) {
+        // Pause then delete
+        pauseTimer = setTimeout(() => {
+          pauseTimer = null;
+          deleting = true;
+          setTimeout(type, 50);
+        }, 2400);
+        return;
+      }
+    } else {
+      charIdx--;
+      el.textContent = current.slice(0, charIdx);
+      if (charIdx === 0) {
+        deleting = false;
+        lineIdx = (lineIdx + 1) % lines.length;
+      }
+    }
+    setTimeout(type, deleting ? 30 : 65);
+  }
+
+  setTimeout(type, 800);
+})();
+
+// ===== INTERSECTION OBSERVER (fade-up) =====
+(function() {
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.15 });
+
+  document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+})();
+
+// ===== NOVA CANVAS GENERATE =====
+async function generateCanvas() {
+  const prompt = document.getElementById('canvas-prompt').value.trim();
+  if (!prompt) {
+    showCanvasError('请输入图像描述');
+    return;
+  }
+
+  const btn = document.getElementById('canvas-btn');
+  const loading = document.getElementById('canvas-loading');
+  const placeholder = document.getElementById('canvas-placeholder');
+  const result = document.getElementById('canvas-result');
+  const errorEl = document.getElementById('canvas-error');
+
+  btn.disabled = true;
+  btn.textContent = '...';
+  loading.style.display = 'flex';
+  placeholder.style.display = 'none';
+  result.style.display = 'none';
+  errorEl.style.display = 'none';
+
+  try {
+    const res = await fetch('https://sonic.aolei.org/api/canvas', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ prompt })
+    });
+
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+
+    if (data.image_base64) {
+      result.src = 'data:image/png;base64,' + data.image_base64;
+      result.style.display = 'block';
+      result.onload = () => { loading.style.display = 'none'; };
+    } else if (data.image_url) {
+      result.src = data.image_url;
+      result.style.display = 'block';
+      result.onload = () => { loading.style.display = 'none'; };
+    } else {
+      throw new Error('No image in response');
+    }
+  } catch (err) {
+    loading.style.display = 'none';
+    placeholder.style.display = 'flex';
+    showCanvasError('生成失败：' + err.message);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'GEN →';
+  }
+}
+
+function showCanvasError(msg) {
+  const el = document.getElementById('canvas-error');
+  el.textContent = msg;
+  el.style.display = 'block';
+}
+
+document.getElementById('canvas-prompt').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') generateCanvas();
+});
+</script>
+
+<!-- ===== VIDEO LIGHTBOX ===== -->
+<div id="video-lightbox" onclick="closeLightbox(event)">
+  <div id="video-lightbox-close" onclick="closeLightbox()">✕</div>
+  <video id="lightbox-video" controls playsinline>
+    <source id="lightbox-source" src="" type="video/mp4">
+  </video>
+  <div id="video-lightbox-hint">点击画面外或按 ESC 关闭</div>
+</div>
+
+<script>
+function openLightbox(src) {
+  const lb = document.getElementById('video-lightbox');
+  const vid = document.getElementById('lightbox-video');
+  const src_el = document.getElementById('lightbox-source');
+  src_el.src = src;
+  vid.load();
+  lb.classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+function closeLightbox(e) {
+  if (e && e.target === document.getElementById('lightbox-video')) return;
+  const lb = document.getElementById('video-lightbox');
+  const vid = document.getElementById('lightbox-video');
+  vid.pause();
+  lb.classList.remove('active');
+  document.body.style.overflow = '';
+}
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeLightbox();
+});
+// 给所有 video-slot 里的 video 绑定点击
+document.querySelectorAll('.video-slot video').forEach(v => {
+  v.parentElement.addEventListener('click', () => {
+    openLightbox(v.querySelector('source').src);
+  });
+});
+</script>
+<div style="background:#050508;padding:16px 64px 24px;border-top:1px solid rgba(255,107,53,0.1);text-align:center;">
+  <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:rgba(255,255,255,0.2);letter-spacing:0.08em;margin-bottom:8px;">NOVA CANVAS PROMPT</div>
+  <div style="font-size:13px;color:rgba(255,107,53,0.6);user-select:all;cursor:text;line-height:1.8;max-width:800px;margin:0 auto;">A giant luminous lobster floating in cosmic space, surrounded by glowing AWS orange data streams and circuit board constellations, ultra detailed, cinematic lighting, deep space background</div>
+</div>
+</body>
+</html>

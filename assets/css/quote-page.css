@@ -1,0 +1,162 @@
+/* quote-page.css — 单篇语录阅读页样式 */
+
+.qp-main {
+  padding-top: 52px;
+  min-height: 100vh;
+}
+
+.qp-loading {
+  padding: 120px 40px;
+  text-align: center;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.qp-wrap {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 40px 40px 80px;
+}
+
+/* 返回链接 */
+.qp-back-row {
+  margin-bottom: 32px;
+}
+.qp-back {
+  font-size: 0.82rem;
+  color: var(--muted);
+  text-decoration: none;
+  font-family: 'JetBrains Mono', monospace;
+  transition: color .2s;
+}
+.qp-back:hover { color: hsl(var(--hue), 70%, 65%); }
+
+/* Hero */
+.qp-hero {
+  margin-bottom: 48px;
+  padding-bottom: 32px;
+  border-bottom: 1px solid var(--border);
+}
+.qp-eyebrow {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.72rem;
+  color: hsl(var(--hue), 60%, 60%);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 14px;
+}
+.qp-title {
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1.25;
+  color: var(--text);
+}
+
+/* Article */
+.qp-article {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+
+.qp-section {
+  position: relative;
+  padding-left: 20px;
+  border-left: 2px solid var(--border);
+}
+.qp-section-lead   { border-left-color: hsl(var(--hue), 65%, 55%); }
+.qp-section-thought { border-left-color: var(--cyan); }
+.qp-section-closing { border-left-color: var(--purple); }
+
+.qp-sec-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--muted);
+  margin-bottom: 14px;
+}
+
+.qp-lead-text {
+  font-size: 1.05rem;
+  color: var(--text);
+  line-height: 1.85;
+  font-style: italic;
+}
+
+.qp-thought p {
+  font-size: 0.92rem;
+  color: var(--muted);
+  line-height: 1.95;
+  margin-bottom: 16px;
+}
+.qp-thought p:last-child { margin-bottom: 0; }
+
+.qp-closing {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text);
+  line-height: 1.65;
+  margin: 0;
+  padding: 0;
+  font-style: normal;
+  border: none;
+}
+
+/* Actions */
+.qp-actions {
+  margin-top: 48px;
+  padding-top: 24px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  gap: 12px;
+}
+.qp-share-btn {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 18px;
+  font-size: 0.82rem;
+  color: var(--muted);
+  cursor: pointer;
+  transition: border-color .2s, color .2s;
+}
+.qp-share-btn:hover {
+  border-color: hsl(var(--hue), 60%, 55%);
+  color: var(--text);
+}
+
+/* Prev / Next nav */
+.qp-nav-btns {
+  margin-top: 48px;
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+}
+.qp-nav-btn {
+  font-size: 0.82rem;
+  color: var(--muted);
+  text-decoration: none;
+  padding: 10px 0;
+  transition: color .2s;
+  max-width: 48%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.qp-nav-btn:hover { color: var(--text); }
+.qp-next { margin-left: auto; text-align: right; }
+
+/* Toast (already in main css, but ensure show class) */
+.toast.show {
+  opacity: 1 !important;
+  transform: translateX(-50%) translateY(0) !important;
+}
+
+/* Mobile */
+@media (pointer: coarse) {
+  .qp-wrap { padding: 24px 20px 60px; }
+  .qp-title { font-size: 1.5rem; }
+  .qp-lead-text { font-size: 0.95rem; }
+  .qp-closing { font-size: 1rem; }
+}
