@@ -47,6 +47,12 @@
     .pill.gold { border-color: rgba(240,160,48,0.4); color: #F0A030; }
     .pill.blue { border-color: rgba(56,189,248,0.4); color: #38BDF8; }
     @media (max-width: 640px) { .security-grid { grid-template-columns: 1fr; } .lab-detail { padding: 20px; } }
+    .code-block { background: rgba(0,0,0,0.4); border: 1px solid rgba(56,189,248,0.2); border-radius: 4px; margin: 16px 0; overflow-x: auto; }
+    .code-label { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.15em; color: #38BDF8; padding: 8px 16px; border-bottom: 1px solid rgba(56,189,248,0.1); text-transform: uppercase; }
+    .code-block pre { padding: 16px; font-family: 'JetBrains Mono', monospace; font-size: 13px; color: #e8ecf4; line-height: 1.7; white-space: pre-wrap; word-break: break-all; margin: 0; }
+    .code-block code { font-family: 'JetBrains Mono', monospace; }
+    .tip-box { background: rgba(240,160,48,0.06); border: 1px solid rgba(240,160,48,0.2); border-left: 3px solid #F0A030; padding: 16px 20px; margin: 16px 0; font-size: 14px; color: var(--muted); line-height: 1.7; }
+    .tip-box strong { color: var(--text); }
   </style>
 </head>
 <body>
@@ -178,6 +184,216 @@
         <tr><td>配置管理</td><td>手动修改，易漂移</td><td style="color:#34D399;">IaC 优先，版本可控</td></tr>
       </tbody>
     </table>
+  </div>
+
+  <!-- 动手实验 -->
+  <div class="lab-section">
+    <h2>动手实验：配置 Kiro + OpenClaw 协作</h2>
+    <p>前提：你已经通过前面的实验完成了 Kiro IDE 安装和 OpenClaw 在 AWS EC2 上的部署。接下来我们打通两者的协作链路，并完成一个小实验。</p>
+  </div>
+
+  <div class="lab-section">
+    <h2>Step 1：建立 SSM 端口转发</h2>
+    <p>通过 SSM 在本地和 EC2 之间建立加密隧道，将 OpenClaw 的 18789 端口映射到本地：</p>
+    <div class="code-block">
+      <div class="code-label">终端（CMD / PowerShell）</div>
+      <pre>aws ssm start-session \
+  --target &lt;你的EC2实例ID&gt; \
+  --region us-east-1 \
+  --document-name AWS-StartPortForwardingSession \
+  --parameters '{"portNumber":["18789"],"localPortNumber":["18789"]}'</pre>
+    </div>
+    <p>看到 <code>Port 18789 opened for sessionId ...</code> 表示连接成功。保持这个终端窗口不要关闭。</p>
+    <div class="tip-box">
+      <strong>💡 Windows 用户注意：</strong>parameters 的 JSON 在 PowerShell 中需要转义。建议将 JSON 保存为文件，用 <code>--parameters file://ssm-params.json</code> 引用。
+    </div>
+  </div>
+
+  <div class="lab-section">
+    <h2>Step 2：验证连通性</h2>
+    <p>打开浏览器访问 <code>http://localhost:18789</code>，应该能看到 OpenClaw 的 Gateway Dashboard。</p>
+    <p>或者在 Kiro 的终端中验证：</p>
+    <div class="code-block">
+      <div class="code-label">Kiro 终端</div>
+      <pre>curl http://localhost:18789
+# 返回 200 OK 表示连通</pre>
+    </div>
+  </div>
+
+  <div class="lab-section">
+    <h2>Step 3：配置 MCP 工具</h2>
+    <p>在 OpenClaw 服务器上配置 AWS MCP Server，让 OpenClaw 具备 AWS 资源管理能力。</p>
+    <p>通过 SSM 在 EC2 上编辑 MCP 配置文件：</p>
+    <div class="code-block">
+      <div class="code-label">EC2 服务器上（通过 SSM session）</div>
+      <pre>cat &gt; ~/.kiro/settings/mcp.json &lt;&lt; 'EOF'
+{
+  "mcpServers": {
+    "aws-knowledge-mcp-server": {
+      "url": "https://knowledge-mcp.global.api.aws",
+      "type": "http",
+      "disabled": false,
+      "autoApprove": ["*"]
+    },
+    "aws-documentation-mcp-server": {
+      "command": "uvx",
+      "args": ["awslabs.aws-documentation-mcp-server@latest"],
+      "env": {
+        "FASTMCP_LOG_LEVEL": "ERROR"
+      },
+      "disabled": false,
+      "autoApprove": ["*"]
+    },
+    "aws-ccapi-mcp-server": {
+      "command": "uvx",
+      "args": ["awslabs.ccapi-mcp-server@latest"],
+      "env": {
+        "FASTMCP_LOG_LEVEL": "ERROR",
+        "AWS_REGION": "us-east-1"
+      },
+      "disabled": false,
+      "autoApprove": []
+    },
+    "aws-api-mcp-server": {
+      "command": "uvx",
+      "args": ["awslabs.aws-api-mcp-server@latest"],
+      "env": {
+        "FASTMCP_LOG_LEVEL": "ERROR",
+        "AWS_REGION": "us-east-1"
+      },
+      "disabled": false,
+      "autoApprove": []
+    },
+    "terraform-mcp-server": {
+      "command": "uvx",
+      "args": ["awslabs.terraform-mcp-server@latest"],
+      "env": {
+        "FASTMCP_LOG_LEVEL": "ERROR"
+      },
+      "disabled": false,
+      "autoApprove": ["*"]
+    }
+  }
+}
+EOF</pre>
+    </div>
+    <div class="tip-box">
+      <strong>🔒 安全提示：</strong><code>aws-ccapi-mcp-server</code> 和 <code>aws-api-mcp-server</code> 的 autoApprove 设为空数组，意味着每次资源变更操作都需要人工确认。这是安全设计的核心。
+    </div>
+  </div>
+
+  <div class="lab-section">
+    <h2>Step 4：在 Kiro 中连接 OpenClaw</h2>
+    <p>在 Kiro IDE 中，你可以通过终端直接与 OpenClaw 交互。SSM 端口转发建立后，OpenClaw 的所有能力都可以通过 <code>localhost:18789</code> 访问。</p>
+    <p>在 Kiro 终端中测试 OpenClaw 的 AI 能力：</p>
+    <div class="code-block">
+      <div class="code-label">Kiro 终端</div>
+      <pre># 通过 SSM 在 EC2 上执行命令
+aws ssm send-command \
+  --instance-ids &lt;你的EC2实例ID&gt; \
+  --document-name "AWS-RunShellScript" \
+  --parameters 'commands=["openclaw status"]' \
+  --region us-east-1
+
+# 查看命令执行结果
+aws ssm get-command-invocation \
+  --command-id &lt;上一步返回的CommandId&gt; \
+  --instance-id &lt;你的EC2实例ID&gt; \
+  --region us-east-1</pre>
+    </div>
+    <p>看到 OpenClaw 的状态信息（版本、模型、渠道等）表示 Kiro 和 OpenClaw 已经成功联通。</p>
+  </div>
+
+  <div class="lab-section">
+    <h2>Step 5：实战演练 — 用 Kiro + OpenClaw 搭建静态网站</h2>
+    <p>现在来做一个完整的实战：通过 Kiro 指挥 OpenClaw，在 AWS 上搭建一个静态网站。</p>
+  </div>
+
+  <div class="lab-section" style="padding-left:20px;border-left:2px solid rgba(240,160,48,0.3);">
+    <h2>5.1 创建 S3 桶并开启静态网站托管</h2>
+    <p>在 Kiro 终端中，通过 SSM 让 OpenClaw 的 EC2 执行 AWS CLI：</p>
+    <div class="code-block">
+      <div class="code-label">Kiro 终端 → SSM → EC2</div>
+      <pre># 创建 S3 桶（替换 my-bar1-website 为你的桶名）
+aws ssm send-command \
+  --instance-ids &lt;EC2实例ID&gt; \
+  --document-name "AWS-RunShellScript" \
+  --parameters 'commands=["aws s3 mb s3://my-bar1-website --region us-east-1"]' \
+  --region us-east-1</pre>
+    </div>
+  </div>
+
+  <div class="lab-section" style="padding-left:20px;border-left:2px solid rgba(240,160,48,0.3);">
+    <h2>5.2 创建网站文件</h2>
+    <p>让 OpenClaw 在 EC2 上生成一个简单的 HTML 页面：</p>
+    <div class="code-block">
+      <div class="code-label">Kiro 终端 → SSM → EC2</div>
+      <pre>aws ssm send-command \
+  --instance-ids &lt;EC2实例ID&gt; \
+  --document-name "AWS-RunShellScript" \
+  --parameters 'commands=["cat > /tmp/index.html << EOF
+&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;&lt;title&gt;My First Kiro+OpenClaw Site&lt;/title&gt;&lt;/head&gt;
+&lt;body style=\"background:#0b1120;color:#e8ecf4;font-family:sans-serif;
+  display:flex;align-items:center;justify-content:center;height:100vh\"&gt;
+  &lt;div style=\"text-align:center\"&gt;
+    &lt;h1 style=\"color:#F0A030\"&gt;Hello from Kiro + OpenClaw!&lt;/h1&gt;
+    &lt;p&gt;This site was deployed by AI — securely, through SSM.&lt;/p&gt;
+  &lt;/div&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+EOF"]' \
+  --region us-east-1</pre>
+    </div>
+  </div>
+
+  <div class="lab-section" style="padding-left:20px;border-left:2px solid rgba(240,160,48,0.3);">
+    <h2>5.3 上传到 S3 并配置静态网站</h2>
+    <div class="code-block">
+      <div class="code-label">Kiro 终端 → SSM → EC2</div>
+      <pre># 上传 HTML 文件
+aws ssm send-command \
+  --instance-ids &lt;EC2实例ID&gt; \
+  --document-name "AWS-RunShellScript" \
+  --parameters 'commands=[
+    "aws s3 cp /tmp/index.html s3://my-bar1-website/index.html --content-type text/html",
+    "aws s3 website s3://my-bar1-website --index-document index.html",
+    "aws s3api put-bucket-policy --bucket my-bar1-website --policy {\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Principal\":\"*\",\"Action\":\"s3:GetObject\",\"Resource\":\"arn:aws:s3:::my-bar1-website/*\"}]}",
+    "echo WEBSITE_DEPLOYED"
+  ]' \
+  --region us-east-1</pre>
+    </div>
+  </div>
+
+  <div class="lab-section" style="padding-left:20px;border-left:2px solid rgba(240,160,48,0.3);">
+    <h2>5.4 验证网站</h2>
+    <p>部署完成后，访问你的静态网站：</p>
+    <div class="code-block">
+      <div class="code-label">浏览器</div>
+      <pre>http://my-bar1-website.s3-website-us-east-1.amazonaws.com</pre>
+    </div>
+    <p>看到 <span style="color:#F0A030;">Hello from Kiro + OpenClaw!</span> 就表示实验成功。</p>
+    <div class="tip-box">
+      <strong>🎉 恭喜！</strong>你刚刚完成了一次完整的 Kiro + OpenClaw 协作：Kiro 编排指令 → SSM 安全传输 → OpenClaw EC2 执行 AWS CLI → S3 静态网站上线。全程零公网暴露，全链路可审计。
+    </div>
+  </div>
+
+  <div class="lab-section">
+    <h2>Step 6：清理资源（可选）</h2>
+    <p>实验完成后，清理创建的资源避免产生费用：</p>
+    <div class="code-block">
+      <div class="code-label">Kiro 终端 → SSM → EC2</div>
+      <pre>aws ssm send-command \
+  --instance-ids &lt;EC2实例ID&gt; \
+  --document-name "AWS-RunShellScript" \
+  --parameters 'commands=[
+    "aws s3 rm s3://my-bar1-website --recursive",
+    "aws s3 rb s3://my-bar1-website",
+    "echo CLEANUP_DONE"
+  ]' \
+  --region us-east-1</pre>
+    </div>
   </div>
 
   <!-- 最佳实践 -->
