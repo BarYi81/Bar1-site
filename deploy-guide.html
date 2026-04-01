@@ -39,8 +39,10 @@
   <a class="nav-brand" href="index.html">Bar1 × AWS</a>
   <ul class="nav-links">
     <li><a href="index.html">首页</a></li>
-    <li><a href="demo.html">Demo</a></li>
     <li><a href="#deploy">部署对比</a></li>
+    <li><a href="#install-openclaw">安装 OpenClaw</a></li>
+    <li><a href="#install-kiro">安装 Kiro</a></li>
+    <li><a href="#kiro-openclaw">Kiro + OpenClaw</a></li>
     <li><a href="#security">安全控制</a></li>
   </ul>
 </nav>
@@ -135,10 +137,143 @@
 
 <div class="divider"></div>
 
-<!-- ===== SECTION 2: 安全控制建议 ===== -->
+<!-- ===== SECTION 2: 安装 OpenClaw ===== -->
+<section id="install-openclaw">
+  <div class="container">
+    <div class="section-label">02 · 安装指南</div>
+    <div class="section-title">安装 <span>OpenClaw</span></div>
+    <div class="section-desc">OpenClaw 不只是聊天软件——它是一个能调用工具、执行代码、控制设备、主动推送的 AI 智能体。以下是各环境的安装方式。</div>
+
+    <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:24px;margin-bottom:48px;">
+
+      <div style="border:1px solid var(--border);padding:28px;background:var(--surface);">
+        <div style="font-family:var(--mono);font-size:11px;color:var(--gold);letter-spacing:0.15em;margin-bottom:12px;">本地安装（macOS / Linux）</div>
+        <div style="font-weight:600;font-size:18px;margin-bottom:16px;">🖥️ 一行命令，本地启动</div>
+        <div style="background:rgba(0,0,0,0.3);border:1px solid rgba(56,189,248,0.2);border-left:3px solid var(--blue);padding:12px 16px;font-family:var(--mono);font-size:13px;color:var(--blue);line-height:1.8;margin-bottom:16px;">
+          curl -fsSL https://openclaw.com/install | bash<br>
+          openclaw start
+        </div>
+        <div style="font-size:13px;color:var(--muted);line-height:1.7;">安装完成后访问 <span style="color:var(--blue);">http://localhost:18789</span> 即可使用。支持 Bedrock、OpenAI、Gemini 等多种模型后端。</div>
+      </div>
+
+      <div style="border:1px solid var(--border);padding:28px;background:var(--surface);">
+        <div style="font-family:var(--mono);font-size:11px;color:var(--gold);letter-spacing:0.15em;margin-bottom:12px;">AWS EC2 部署</div>
+        <div style="font-weight:600;font-size:18px;margin-bottom:16px;">☁️ CloudFormation 一键部署</div>
+        <div style="background:rgba(0,0,0,0.3);border:1px solid rgba(56,189,248,0.2);border-left:3px solid var(--blue);padding:12px 16px;font-family:var(--mono);font-size:13px;color:var(--blue);line-height:1.8;margin-bottom:16px;">
+          GitHub → aws-samples/sample-OpenClaw-on-AWS-with-Bedrock<br>
+          点击 Launch Stack → 选择 Region → 约 8 分钟上线
+        </div>
+        <div style="font-size:13px;color:var(--muted);line-height:1.7;">自动创建 VPC、EC2（Graviton ARM）、IAM Role、VPC Endpoints。通过 SSM 端口转发安全访问，无需暴露公网端口。</div>
+      </div>
+
+      <div style="border:1px solid var(--border);padding:28px;background:var(--surface);">
+        <div style="font-family:var(--mono);font-size:11px;color:var(--gold);letter-spacing:0.15em;margin-bottom:12px;">Lightsail 快速部署</div>
+        <div style="font-weight:600;font-size:18px;margin-bottom:16px;">⚡ 最简单的云上方案</div>
+        <div style="font-size:13px;color:var(--muted);line-height:1.7;">在 AWS Lightsail 控制台选择 OpenClaw 镜像，几分钟即可启动。预配置 Bedrock 作为默认 AI 模型提供商，开箱即用。适合个人和小团队快速体验。</div>
+      </div>
+
+      <div style="border:1px solid var(--border);padding:28px;background:var(--surface);">
+        <div style="font-family:var(--mono);font-size:11px;color:var(--gold);letter-spacing:0.15em;margin-bottom:12px;">Windows 安装</div>
+        <div style="font-weight:600;font-size:18px;margin-bottom:16px;">🪟 WSL 或 Docker</div>
+        <div style="font-size:13px;color:var(--muted);line-height:1.7;">Windows 用户可通过 WSL（Windows Subsystem for Linux）安装，或使用 Docker 容器运行。推荐 WSL 2 + Ubuntu 24.04 环境，安装方式与 Linux 相同。</div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ===== SECTION 3: 安装 Kiro ===== -->
+<section id="install-kiro">
+  <div class="container">
+    <div class="section-label">03 · 开发工具</div>
+    <div class="section-title">安装 <span>Kiro IDE & CLI</span></div>
+    <div class="section-desc">Kiro 是 AI 驱动的开发环境，也是 OpenClaw 的最佳搭档。IDE 用于开发，CLI 用于终端操作。</div>
+
+    <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:24px;margin-bottom:48px;">
+
+      <div style="border:1px solid var(--border);padding:28px;background:var(--surface);">
+        <div style="font-family:var(--mono);font-size:11px;color:var(--gold);letter-spacing:0.15em;margin-bottom:12px;">Kiro IDE</div>
+        <div style="font-weight:600;font-size:18px;margin-bottom:16px;">🧠 AI 驱动的 IDE</div>
+        <div style="font-size:13px;color:var(--muted);line-height:1.7;margin-bottom:16px;">
+          基于 Code OSS，支持 VS Code 扩展。内置 AI Agent、Spec 驱动开发、Steering 文件、MCP 集成等能力。
+        </div>
+        <div style="background:rgba(0,0,0,0.3);border:1px solid rgba(240,160,48,0.2);border-left:3px solid var(--gold);padding:12px 16px;font-family:var(--mono);font-size:13px;color:var(--gold);line-height:1.8;">
+          下载地址：kiro.dev/downloads<br>
+          支持 macOS / Windows / Linux
+        </div>
+      </div>
+
+      <div style="border:1px solid var(--border);padding:28px;background:var(--surface);">
+        <div style="font-family:var(--mono);font-size:11px;color:var(--gold);letter-spacing:0.15em;margin-bottom:12px;">Kiro CLI</div>
+        <div style="font-weight:600;font-size:18px;margin-bottom:16px;">⌨️ 终端里的 AI 助手</div>
+        <div style="font-size:13px;color:var(--muted);line-height:1.7;margin-bottom:16px;">
+          把 AI 能力带到终端。支持自然语言对话、MCP、Steering、自定义 Agent。
+        </div>
+        <div style="background:rgba(0,0,0,0.3);border:1px solid rgba(56,189,248,0.2);border-left:3px solid var(--blue);padding:12px 16px;font-family:var(--mono);font-size:13px;color:var(--blue);line-height:1.8;">
+          curl -fsSL https://cli.kiro.dev/install | bash<br>
+          Windows: winget install Amazon.KiroCLI
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ===== SECTION 4: Kiro + OpenClaw 联动 ===== -->
+<section id="kiro-openclaw">
+  <div class="container">
+    <div class="section-label">04 · 协同工作</div>
+    <div class="section-title">Kiro + OpenClaw <span>联动</span></div>
+    <div class="section-desc">Kiro 是大脑，OpenClaw 是双手。Kiro 负责思考和编排，OpenClaw 负责执行和交互。两者结合，释放 GenAI 的全部潜力。</div>
+
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-bottom:48px;">
+
+      <div style="border:1px solid var(--border);padding:28px;background:var(--surface);border-top:2px solid var(--gold);">
+        <div style="font-size:28px;margin-bottom:12px;">🔗</div>
+        <div style="font-weight:600;font-size:16px;margin-bottom:12px;">MCP 集成</div>
+        <div style="font-size:13px;color:var(--muted);line-height:1.7;">在 Kiro 中配置 <span style="color:var(--blue);font-family:var(--mono);font-size:12px;">.kiro/settings/mcp.json</span>，连接 OpenClaw 的 MCP Server。Kiro 可以直接调用 OpenClaw 上安装的 Agent 和 Skills。</div>
+      </div>
+
+      <div style="border:1px solid var(--border);padding:28px;background:var(--surface);border-top:2px solid var(--blue);">
+        <div style="font-size:28px;margin-bottom:12px;">🛠️</div>
+        <div style="font-weight:600;font-size:16px;margin-bottom:12px;">远程运维</div>
+        <div style="font-size:13px;color:var(--muted);line-height:1.7;">Kiro 通过 SSM 端口转发连接云上的 OpenClaw，执行部署、配置修改、故障排查等运维操作。全程加密，无需暴露公网端口。</div>
+      </div>
+
+      <div style="border:1px solid var(--border);padding:28px;background:var(--surface);border-top:2px solid var(--green);">
+        <div style="font-size:28px;margin-bottom:12px;">🤖</div>
+        <div style="font-weight:600;font-size:16px;margin-bottom:12px;">Agent 编排</div>
+        <div style="font-size:13px;color:var(--muted);line-height:1.7;">OpenClaw 不只是聊天——它是一个完整的 AI Agent 平台。通过 Skills 扩展能力，通过 MCP 连接外部工具，通过 Kiro 编排复杂工作流。能发邮件、控设备、执行代码、主动推送。</div>
+      </div>
+
+    </div>
+
+    <div style="border:1px solid rgba(240,160,48,0.3);background:rgba(240,160,48,0.04);padding:28px;margin-bottom:24px;">
+      <div style="font-family:var(--mono);font-size:12px;color:var(--gold);margin-bottom:12px;">典型工作流</div>
+      <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;font-family:var(--mono);font-size:13px;">
+        <span style="border:1px solid var(--gold);padding:6px 14px;color:var(--gold);">Kiro IDE</span>
+        <span style="color:var(--muted);">→ SSM 端口转发 →</span>
+        <span style="border:1px solid var(--blue);padding:6px 14px;color:var(--blue);">OpenClaw Agent</span>
+        <span style="color:var(--muted);">→ MCP / Skills →</span>
+        <span style="border:1px solid var(--green);padding:6px 14px;color:var(--green);">AWS 服务 / 外部工具</span>
+      </div>
+      <div style="font-size:13px;color:var(--muted);margin-top:16px;line-height:1.7;">
+        开发者在 Kiro 中用自然语言下达指令 → Kiro 通过 SSM 安全连接 OpenClaw → OpenClaw 调用 Skills 和 MCP 工具执行任务 → 结果回传到 Kiro 展示。整个过程对话即操作，安全可审计。
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ===== SECTION 5: 安全控制建议 ===== -->
 <section id="security">
   <div class="container">
-    <div class="section-label">02 · 安全控制</div>
+    <div class="section-label">05 · 安全控制</div>
     <div class="section-title">安全控制<span>建议汇总</span></div>
     <div class="section-desc">12 项安全最佳实践，覆盖从部署到运行的全生命周期。</div>
 
