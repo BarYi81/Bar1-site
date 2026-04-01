@@ -20,29 +20,29 @@
 }
 
 /* ══════════════════════════════════════════
-   暗色模式：蓝色科技屏 (Bar1 style)
+   明亮模式：现代聊天风格 (Bar1 style)
 ══════════════════════════════════════════ */
 :root {
-  --rc-bg:         #060d1a;
-  --rc-bg2:        #0a1225;
-  --rc-bg3:        #0e1a30;
-  --rc-border:     #38BDF8;
-  --rc-border2:    #1a3050;
-  --rc-title-bg:   #0a1225;
-  --rc-conn-bg:    #060d1a;
-  --rc-conn-color: #2a5080;
-  --rc-sys:        #2a5080;
-  --rc-time:       #3a6090;
-  --rc-nick-bot:   #38BDF8;
-  --rc-nick-usr:   #F0A030;
-  --rc-msg-bot:    #60a5fa;
-  --rc-msg-usr:    #fbbf24;
-  --rc-input-bg:   #080e1c;
-  --rc-prompt:     #38BDF8;
-  --rc-cursor:     #38BDF8;
-  --rc-hint:       #1a3050;
-  --rc-hint-bg:    #0a1225;
-  --rc-scan:       rgba(0,0,0,0.12);
+  --rc-bg:         #FFFFFF;
+  --rc-bg2:        #F9FAFB;
+  --rc-bg3:        #F3F4F6;
+  --rc-border:     #E5E7EB;
+  --rc-border2:    #F3F4F6;
+  --rc-title-bg:   #F9FAFB;
+  --rc-conn-bg:    #F3F4F6;
+  --rc-conn-color: #9CA3AF;
+  --rc-sys:        #9CA3AF;
+  --rc-time:       #9CA3AF;
+  --rc-nick-bot:   #6366F1;
+  --rc-nick-usr:   #F59E0B;
+  --rc-msg-bot:    #4B5563;
+  --rc-msg-usr:    #1F2937;
+  --rc-input-bg:   #FFFFFF;
+  --rc-prompt:     #6366F1;
+  --rc-cursor:     #6366F1;
+  --rc-hint:       #E5E7EB;
+  --rc-hint-bg:    #F9FAFB;
+  --rc-scan:       none;
 }
 
 /* 浅色模式：IRC 黑白风 */
@@ -77,7 +77,7 @@ body.light {
   font-family: 'Courier New', Courier, monospace;
   position: relative;
   overflow: hidden;
-  box-shadow: 0 0 24px rgba(0,0,0,.5);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
   transition: border-color .3s, background .3s;
 }
 
