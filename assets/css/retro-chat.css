@@ -20,28 +20,28 @@
 }
 
 /* ══════════════════════════════════════════
-   明亮模式：现代聊天风格 (Bar1 style)
+   太空探索风格聊天 (Bar1 Space Theme)
 ══════════════════════════════════════════ */
 :root {
-  --rc-bg:         #FFFFFF;
-  --rc-bg2:        #F9FAFB;
-  --rc-bg3:        #F3F4F6;
-  --rc-border:     #E5E7EB;
-  --rc-border2:    #F3F4F6;
-  --rc-title-bg:   #F9FAFB;
-  --rc-conn-bg:    #F3F4F6;
-  --rc-conn-color: #9CA3AF;
-  --rc-sys:        #9CA3AF;
-  --rc-time:       #9CA3AF;
-  --rc-nick-bot:   #6366F1;
-  --rc-nick-usr:   #F59E0B;
-  --rc-msg-bot:    #4B5563;
-  --rc-msg-usr:    #1F2937;
-  --rc-input-bg:   #FFFFFF;
-  --rc-prompt:     #6366F1;
-  --rc-cursor:     #6366F1;
-  --rc-hint:       #E5E7EB;
-  --rc-hint-bg:    #F9FAFB;
+  --rc-bg:         #0F0E17;
+  --rc-bg2:        #161527;
+  --rc-bg3:        #1A1930;
+  --rc-border:     rgba(127,90,240,0.4);
+  --rc-border2:    rgba(127,90,240,0.15);
+  --rc-title-bg:   #161527;
+  --rc-conn-bg:    #0F0E17;
+  --rc-conn-color: #5A5A7A;
+  --rc-sys:        #5A5A7A;
+  --rc-time:       #6A6A8A;
+  --rc-nick-bot:   #7F5AF0;
+  --rc-nick-usr:   #2CB67D;
+  --rc-msg-bot:    #C9C9D6;
+  --rc-msg-usr:    #FFFFFE;
+  --rc-input-bg:   #0F0E17;
+  --rc-prompt:     #7F5AF0;
+  --rc-cursor:     #7F5AF0;
+  --rc-hint:       rgba(127,90,240,0.15);
+  --rc-hint-bg:    #161527;
   --rc-scan:       none;
 }
 
