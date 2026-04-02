@@ -55,7 +55,29 @@
   .prod-compare::before { content: '⚡'; }
   .sub-label { font-family: var(--mono); font-size: 0.75rem; letter-spacing: 0.1em; color: #7F5AF0; margin-bottom: 16px; padding: 4px 12px; background: rgba(127,90,240,0.12); border-radius: 4px; display: inline-block; }
   @media (max-width: 640px) { .prod-grid { grid-template-columns: 1fr; } }
+
+  /* Expandable detail */
+  .prod-card { cursor: pointer; }
+  .prod-toggle { font-family: var(--mono); font-size: 0.75rem; color: #7F5AF0; margin-top: 8px; display: flex; align-items: center; gap: 4px; }
+  .prod-toggle::after { content: '▼'; font-size: 0.6rem; transition: transform .3s; }
+  .prod-card.open .prod-toggle::after { transform: rotate(180deg); }
+  .prod-detail { max-height: 0; overflow: hidden; transition: max-height .4s ease; }
+  .prod-card.open .prod-detail { max-height: 800px; }
+  .prod-detail-inner { padding-top: 16px; margin-top: 12px; border-top: 1px solid rgba(255,255,255,0.08); }
+  .detail-section { margin-bottom: 14px; }
+  .detail-section h4 { font-size: 0.85rem; font-weight: 600; color: #7F5AF0; margin-bottom: 6px; }
+  .detail-section p { font-size: 0.82rem; color: #C9C9D6; line-height: 1.7; }
+  .detail-case { background: rgba(44,182,125,0.08); border-left: 3px solid #2CB67D; padding: 12px 16px; border-radius: 0 8px 8px 0; margin-top: 8px; }
+  .detail-case .case-title { font-size: 0.82rem; font-weight: 600; color: #2CB67D; margin-bottom: 4px; }
+  .detail-case p { font-size: 0.8rem; color: #C9C9D6; line-height: 1.7; }
 </style>
+
+<script>
+document.addEventListener('click', e => {
+  const card = e.target.closest('.prod-card');
+  if (card) card.classList.toggle('open');
+});
+</script>
 
 <!-- ===== 4. FRONTIER AGENTS ===== -->
 <div class="cat-section">
@@ -68,18 +90,36 @@
       <div class="prod-desc">你的虚拟开发者。能维持跨仓库的深度上下文，学习团队的编码风格，独立完成复杂的开发任务——从 bug 修复到功能开发，可以连续工作数天。</div>
       <div class="prod-scene"><strong>场景：</strong>复杂 bug 修复、跨仓库重构、功能开发、技术债清理</div>
       <div class="prod-compare">同类：Devin, OpenAI Codex Agent, Claude Code</div>
+      <div class="prod-toggle">点击展开详情</div>
+      <div class="prod-detail"><div class="prod-detail-inner">
+        <div class="detail-section"><h4>核心能力</h4><p>维持跨仓库的深度上下文，理解代码库的架构和依赖关系。学习团队的编码风格、命名规范和设计模式。能独立完成从需求分析到代码提交的完整开发流程，支持连续工作数天。</p></div>
+        <div class="detail-section"><h4>工作方式</h4><p>开发者在 Kiro 中创建任务（如 GitHub Issue），Kiro Autonomous Agent 自动拉取代码、分析需求、编写代码、运行测试、提交 PR。过程中遇到问题会主动提问，完成后通知开发者审查。</p></div>
+        <div class="detail-case"><div class="case-title">📋 实际案例：电商平台支付模块重构</div><p>某电商团队需要将支付模块从同步调用改为异步消息队列。Kiro Agent 分析了 12 个相关文件的依赖关系，自动重构了支付流程、添加了 SQS 消息队列集成、更新了 30+ 个单元测试，整个过程耗时 6 小时，人工审查后一次通过。传统方式预估需要 2-3 天。</p></div>
+      </div></div>
     </div>
     <div class="prod-card">
       <div class="prod-name">AWS DevOps Agent <span class="badge">NEW</span></div>
       <div class="prod-desc">自主运维 Agent，持续监控应用健康状态，自动检测异常、诊断根因、执行修复。将被动告警响应转变为主动问题预防。</div>
       <div class="prod-scene"><strong>场景：</strong>7×24 自动化运维、故障自愈、性能优化、变更管理</div>
       <div class="prod-compare">同类：PagerDuty AIOps, Datadog AI Agent</div>
+      <div class="prod-toggle">点击展开详情</div>
+      <div class="prod-detail"><div class="prod-detail-inner">
+        <div class="detail-section"><h4>核心能力</h4><p>持续监控 CloudWatch 指标、日志和告警，自动关联多个信号源诊断根因。能执行预定义的修复 Runbook，也能根据上下文自主决策修复方案。支持变更管理、容量规划和性能优化。</p></div>
+        <div class="detail-section"><h4>工作方式</h4><p>Agent 7×24 运行，当检测到异常（如 CPU 飙升、错误率上升、延迟增加）时，自动收集相关日志和指标，分析根因，执行修复操作（如重启服务、扩容实例、回滚部署），并生成事件报告。</p></div>
+        <div class="detail-case"><div class="case-title">📋 实际案例：凌晨 3 点的数据库连接池耗尽</div><p>某 SaaS 平台凌晨 3 点数据库连接池耗尽，API 响应时间从 200ms 飙升到 5s。DevOps Agent 在 30 秒内检测到异常，分析日志发现是一个慢查询导致连接堆积，自动 kill 了问题查询、临时扩大连接池、创建了 Jira ticket 跟踪根因修复。全程无人工介入，服务在 2 分钟内恢复。</p></div>
+      </div></div>
     </div>
     <div class="prod-card">
       <div class="prod-name">AWS Security Agent <span class="badge">NEW</span></div>
       <div class="prod-desc">自主安全测试 Agent，能理解应用架构和源代码，自动执行渗透测试、发现漏洞、验证风险。将定期安全测试转变为持续安全验证。</div>
       <div class="prod-scene"><strong>场景：</strong>持续渗透测试、漏洞扫描、安全合规验证、代码安全审查</div>
       <div class="prod-compare">同类：Snyk AI, Wiz AI Agent</div>
+      <div class="prod-toggle">点击展开详情</div>
+      <div class="prod-detail"><div class="prod-detail-inner">
+        <div class="detail-section"><h4>核心能力</h4><p>理解应用架构、源代码和部署配置，自动执行上下文感知的渗透测试。不是简单的漏洞扫描，而是像真正的安全工程师一样理解业务逻辑后进行针对性测试。</p></div>
+        <div class="detail-section"><h4>工作方式</h4><p>Agent 读取源代码和架构文档，识别攻击面，生成针对性的测试用例，尝试利用漏洞，验证风险等级，输出详细的安全报告和修复建议。</p></div>
+        <div class="detail-case"><div class="case-title">📋 实际案例：API 鉴权绕过漏洞发现</div><p>某金融科技公司的支付 API 通过了常规安全扫描，但 Security Agent 分析源代码后发现：当请求头中同时包含 JWT token 和 API key 时，鉴权中间件会跳过权限检查。Agent 构造了 PoC 请求验证了漏洞，并给出了修复代码建议。这类逻辑漏洞传统扫描工具几乎无法发现。</p></div>
+      </div></div>
     </div>
   </div>
 </div>
@@ -95,18 +135,33 @@
       <div class="prod-desc">AI 驱动的开发环境，基于 Code OSS。内置 Spec 驱动开发、Steering 文件、MCP 集成、自定义 Agent。支持 Vibe Coding 和结构化开发两种模式。</div>
       <div class="prod-scene"><strong>场景：</strong>日常编码、代码审查、架构设计、项目脚手架生成</div>
       <div class="prod-compare">同类：Cursor, Windsurf, GitHub Copilot Workspace</div>
+      <div class="prod-toggle">点击展开详情</div>
+      <div class="prod-detail"><div class="prod-detail-inner">
+        <div class="detail-section"><h4>核心能力</h4><p>Spec 驱动开发：从需求自动生成设计文档和实现任务。Steering 文件：为项目提供持久的上下文和规范。MCP 集成：连接外部工具和服务。Hooks：基于事件自动触发 Agent 操作。支持 Claude Sonnet/Opus 等多种模型。</p></div>
+        <div class="detail-case"><div class="case-title">📋 实际案例：用 Kiro 搭建 GenAI 展示网站</div><p>开发者用 Kiro 从零搭建了 Bar1 网站——通过自然语言描述需求，Kiro 自动生成 HTML/CSS/JS 代码，配置 GitHub Pages 部署，通过 SSM 连接 OpenClaw 管理云端资源。整个过程在一次对话中完成，包含多页面、中英双语、星空主题。</p></div>
+      </div></div>
     </div>
     <div class="prod-card">
       <div class="prod-name">Amazon Quick Suite</div>
       <div class="prod-desc">从 QuickSight 进化而来的 AI 驱动商业智能平台。集成 AI Agent 进行数据分析、深度研究、自动化报告，用自然语言查询数据。</div>
       <div class="prod-scene"><strong>场景：</strong>业务数据分析、管理层仪表盘、自动化报告生成</div>
       <div class="prod-compare">同类：Power BI + Copilot, Tableau + Einstein</div>
+      <div class="prod-toggle">点击展开详情</div>
+      <div class="prod-detail"><div class="prod-detail-inner">
+        <div class="detail-section"><h4>核心能力</h4><p>自然语言查询数据（"上个月华东区销售额同比增长多少？"）、AI Agent 自动生成可视化报表、深度研究功能自动分析数据趋势和异常、自动化工作流处理日常报告任务。</p></div>
+        <div class="detail-case"><div class="case-title">📋 实际案例：零售连锁店的智能运营分析</div><p>某零售连锁 200+ 门店，店长每天需要花 1 小时看报表。接入 Quick Suite 后，店长直接问"今天哪些商品需要补货？"，AI Agent 自动分析库存、销售趋势和供应链数据，生成补货建议清单。报表时间从 1 小时降到 2 分钟。</p></div>
+      </div></div>
     </div>
     <div class="prod-card">
       <div class="prod-name">AWS Transform</div>
       <div class="prod-desc">AI 驱动的应用现代化服务。部署专业 AI Agent 自动完成代码分析、重构、语言翻译、框架迁移，将项目时间缩短 80%+。</div>
       <div class="prod-scene"><strong>场景：</strong>Java 版本升级、.NET 到 Linux 迁移、单体应用拆分微服务</div>
       <div class="prod-compare">同类：Google Gemini Code Assist (migration), 无直接竞品</div>
+      <div class="prod-toggle">点击展开详情</div>
+      <div class="prod-detail"><div class="prod-detail-inner">
+        <div class="detail-section"><h4>核心能力</h4><p>基于 20 年迁移经验训练的专业 AI Agent，自动完成代码分析、依赖映射、重构规划、语言翻译、框架迁移。支持 Java 版本升级、.NET 到 Linux、单体拆微服务等场景，执行时间缩短 80%+。</p></div>
+        <div class="detail-case"><div class="case-title">📋 实际案例：Java 8 到 Java 21 的大规模升级</div><p>某银行有 500+ 个 Java 8 微服务需要升级到 Java 21。传统方式每个服务需要 2-3 天人工改造。AWS Transform 自动分析每个服务的依赖、API 变更和不兼容项，批量生成升级代码和测试用例。500 个服务在 2 周内完成升级，人工只需审查和验证。</p></div>
+      </div></div>
     </div>
     <div class="prod-card">
       <div class="prod-name">Amazon Connect</div>
@@ -133,6 +188,11 @@
       <div class="prod-desc">AWS 自研基础模型家族，包括 Nova Micro（文本）、Nova Lite（多模态）、Nova Pro（平衡）、Nova Premier（最强）。Nova Sonic 支持实时语音对话，Nova Canvas 支持图像生成。</div>
       <div class="prod-scene"><strong>场景：</strong>企业级 AI 应用，多模态理解，实时语音助手，图像生成</div>
       <div class="prod-compare">同类：GPT-4o, Claude, Gemini</div>
+      <div class="prod-toggle">点击展开详情</div>
+      <div class="prod-detail"><div class="prod-detail-inner">
+        <div class="detail-section"><h4>模型家族</h4><p>Nova Micro（纯文本，速度最快）→ Nova Lite（多模态，性价比高）→ Nova Pro（平衡性能）→ Nova Premier（最强推理）。Nova Sonic 支持实时双向语音对话，Nova Canvas 支持文生图和图像编辑。Nova Act 专为浏览器操作设计。</p></div>
+        <div class="detail-case"><div class="case-title">📋 实际案例：多语种客服语音助手</div><p>某跨境电商用 Nova Sonic 构建了实时语音客服，支持中英日韩四种语言。客户打电话进来直接用母语对话，Nova Sonic 实时理解并回答产品问题、处理退换货。语音延迟低于 500ms，客户满意度提升 35%，人工客服工作量减少 60%。</p></div>
+      </div></div>
     </div>
     <div class="prod-card">
       <div class="prod-name">第三方模型（3P Models）</div>
@@ -151,6 +211,11 @@
       <div class="prod-desc">全托管的 RAG（检索增强生成）服务，自动将企业文档转化为向量索引，让 AI 基于企业知识回答问题。</div>
       <div class="prod-scene"><strong>场景：</strong>企业内部知识问答、客服机器人、技术文档搜索</div>
       <div class="prod-compare">同类：LangChain + Pinecone, LlamaIndex</div>
+      <div class="prod-toggle">点击展开详情</div>
+      <div class="prod-detail"><div class="prod-detail-inner">
+        <div class="detail-section"><h4>核心能力</h4><p>全托管 RAG 服务：上传文档（PDF/Word/HTML/数据库）→ 自动分块 → 向量化 → 存入向量数据库。查询时自动检索相关内容，注入到 LLM 的上下文中，让 AI 基于你的数据回答问题。支持 OpenSearch、Aurora PostgreSQL 等向量存储。</p></div>
+        <div class="detail-case"><div class="case-title">📋 实际案例：企业内部技术知识库</div><p>某科技公司有 5000+ 篇内部技术文档分散在 Confluence、GitHub Wiki 和 SharePoint 中。接入 Bedrock Knowledge Bases 后，工程师直接问"我们的支付服务用的什么消息队列？超时配置是多少？"，AI 从文档中精准找到答案并给出原文引用。新员工 onboarding 时间从 2 周缩短到 3 天。</p></div>
+      </div></div>
     </div>
     <div class="prod-card">
       <div class="prod-name">Guardrails（安全护栏）</div>
@@ -179,6 +244,11 @@
       <div class="prod-desc">灵活的开源 Agent SDK，用简单的 prompt + tools 模式构建 AI Agent。支持多 Agent 协作、工具调用、记忆管理。"给 Agent 一个目标和工具，让 LLM 自己决定怎么做。"</div>
       <div class="prod-scene"><strong>场景：</strong>自定义 Agent 开发，多 Agent 协作系统，需要完全控制的场景</div>
       <div class="prod-compare">同类：LangChain/LangGraph, CrewAI, AutoGen</div>
+      <div class="prod-toggle">点击展开详情</div>
+      <div class="prod-detail"><div class="prod-detail-inner">
+        <div class="detail-section"><h4>核心理念</h4><p>"给 Agent 一个目标和一组工具，让 LLM 自己决定怎么做。" 不需要写复杂的编排逻辑，只需定义 prompt 和 tools，Strands 自动处理工具调用、错误重试、多 Agent 协作。开源 SDK，完全可控。</p></div>
+        <div class="detail-case"><div class="case-title">📋 实际案例：多 Agent 协作的安全运营中心</div><p>某政府机构用 Strands 构建了安全运营 Agent 系统：监控 Agent 持续分析日志 → 发现异常后通知分析 Agent → 分析 Agent 调用威胁情报工具判断风险 → 高风险事件自动触发响应 Agent 执行隔离操作。四个 Agent 协作完成从检测到响应的全流程，MTTR 从 4 小时降到 15 分钟。</p></div>
+      </div></div>
     </div>
   </div>
 
@@ -233,6 +303,11 @@
       <div class="prod-desc">AWS 自研 AI 训练芯片，专为大规模模型训练优化。Trainium2 提供比上一代 4 倍的训练性能，支持万亿参数模型训练。</div>
       <div class="prod-scene"><strong>场景：</strong>大模型预训练、微调，替代 NVIDIA GPU 降低训练成本 40%+</div>
       <div class="prod-compare">同类：NVIDIA H100/H200, Google TPU v5</div>
+      <div class="prod-toggle">点击展开详情</div>
+      <div class="prod-detail"><div class="prod-detail-inner">
+        <div class="detail-section"><h4>核心优势</h4><p>Trainium2 芯片提供 4 倍于上一代的训练性能。UltraCluster 支持数万颗 Trainium 芯片组成超级计算集群，通过高速互联网络实现万亿参数模型的分布式训练。相比同等 NVIDIA GPU 方案，训练成本降低 40%+。</p></div>
+        <div class="detail-case"><div class="case-title">📋 实际案例：Anthropic 使用 Trainium 训练 Claude</div><p>Anthropic 使用 AWS Trainium 集群训练 Claude 系列模型。通过 UltraCluster 的弹性扩展能力，根据训练阶段动态调整计算资源，在保持训练质量的同时显著降低了成本。这也验证了 Trainium 在顶级大模型训练中的可靠性。</p></div>
+      </div></div>
     </div>
     <div class="prod-card">
       <div class="prod-name">AWS Inferentia</div>
