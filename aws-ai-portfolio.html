@@ -9,13 +9,13 @@
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/css/style.css?v=5">
 <style>
-  .portfolio { max-width: 1200px; margin: 80px auto 0; padding: 32px; }
-  .port-back { font-family: var(--mono); font-size: 13px; color: var(--muted); text-decoration: none; display: inline-block; margin-bottom: 24px; }
-  .port-back:hover { color: var(--text); }
+  .portfolio { max-width: 1200px; margin: 80px auto 0; padding: 32px; background: rgba(15,14,23,0.75); backdrop-filter: blur(10px); border-radius: 20px; }
+  .port-back { font-family: var(--mono); font-size: 13px; color: #8888A0; text-decoration: none; display: inline-block; margin-bottom: 24px; }
+  .port-back:hover { color: #FFFFFE; }
   .port-hero { text-align: center; padding: 40px 0 60px; }
-  .port-hero h1 { font-size: clamp(2rem, 5vw, 3rem); font-weight: 800; margin-bottom: 12px; }
-  .port-hero h1 span { color: var(--primary); }
-  .port-hero p { font-size: 1.1rem; color: var(--muted); max-width: 600px; margin: 0 auto; }
+  .port-hero h1 { font-size: clamp(2rem, 5vw, 3rem); font-weight: 800; margin-bottom: 12px; color: #FFFFFE; }
+  .port-hero h1 span { color: #7F5AF0; }
+  .port-hero p { font-size: 1.1rem; color: #C9C9D6; max-width: 600px; margin: 0 auto; }
 </style>
 </head>
 <body>
@@ -39,21 +39,21 @@
 
 <style>
   .cat-section { margin-bottom: 64px; }
-  .cat-header { display: flex; align-items: center; gap: 12px; margin-bottom: 24px; padding-bottom: 12px; border-bottom: 2px solid var(--primary); }
+  .cat-header { display: flex; align-items: center; gap: 12px; margin-bottom: 24px; padding-bottom: 12px; border-bottom: 2px solid #7F5AF0; }
   .cat-icon { font-size: 1.5rem; }
-  .cat-title { font-size: 1.4rem; font-weight: 700; }
-  .cat-desc { font-size: 0.92rem; color: var(--muted); margin-bottom: 24px; line-height: 1.7; }
+  .cat-title { font-size: 1.4rem; font-weight: 700; color: #FFFFFE; }
+  .cat-desc { font-size: 0.92rem; color: #C9C9D6; margin-bottom: 24px; line-height: 1.7; }
   .prod-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 20px; }
-  .prod-card { background: rgba(255,255,255,0.04); border: 1px solid var(--border); border-radius: 16px; padding: 24px; transition: transform .2s, box-shadow .2s; }
-  .prod-card:hover { transform: translateY(-3px); box-shadow: 0 0 30px rgba(127,90,240,0.12); }
-  .prod-name { font-size: 1.1rem; font-weight: 700; margin-bottom: 6px; display: flex; align-items: center; gap: 8px; }
-  .prod-name .badge { font-family: var(--mono); font-size: 0.65rem; padding: 2px 8px; border-radius: 4px; background: rgba(127,90,240,0.15); color: var(--primary); font-weight: 600; }
-  .prod-desc { font-size: 0.88rem; color: var(--muted); line-height: 1.7; margin-bottom: 12px; }
-  .prod-scene { font-size: 0.82rem; color: var(--text2); margin-bottom: 12px; }
-  .prod-scene strong { color: var(--accent); }
-  .prod-compare { font-family: var(--mono); font-size: 0.75rem; color: var(--muted); display: flex; align-items: center; gap: 6px; }
+  .prod-card { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; padding: 24px; transition: transform .2s, box-shadow .2s; }
+  .prod-card:hover { transform: translateY(-3px); box-shadow: 0 0 30px rgba(127,90,240,0.15); border-color: rgba(127,90,240,0.3); }
+  .prod-name { font-size: 1.1rem; font-weight: 700; margin-bottom: 6px; display: flex; align-items: center; gap: 8px; color: #FFFFFE; }
+  .prod-name .badge { font-family: var(--mono); font-size: 0.65rem; padding: 2px 8px; border-radius: 4px; background: rgba(127,90,240,0.2); color: #7F5AF0; font-weight: 600; }
+  .prod-desc { font-size: 0.88rem; color: #C9C9D6; line-height: 1.7; margin-bottom: 12px; }
+  .prod-scene { font-size: 0.82rem; color: #C9C9D6; margin-bottom: 12px; }
+  .prod-scene strong { color: #2CB67D; }
+  .prod-compare { font-family: var(--mono); font-size: 0.75rem; color: #8888A0; display: flex; align-items: center; gap: 6px; }
   .prod-compare::before { content: '⚡'; }
-  .sub-label { font-family: var(--mono); font-size: 0.75rem; letter-spacing: 0.1em; color: var(--primary); margin-bottom: 16px; padding: 4px 12px; background: var(--primary-light); border-radius: 4px; display: inline-block; }
+  .sub-label { font-family: var(--mono); font-size: 0.75rem; letter-spacing: 0.1em; color: #7F5AF0; margin-bottom: 16px; padding: 4px 12px; background: rgba(127,90,240,0.12); border-radius: 4px; display: inline-block; }
   @media (max-width: 640px) { .prod-grid { grid-template-columns: 1fr; } }
 </style>
 
