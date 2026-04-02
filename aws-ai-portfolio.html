@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
@@ -57,63 +57,71 @@
   @media (max-width: 640px) { .prod-grid { grid-template-columns: 1fr; } }
 </style>
 
-<!-- ===== 1. INFRASTRUCTURE ===== -->
+<!-- ===== 4. FRONTIER AGENTS ===== -->
 <div class="cat-section">
-  <div class="cat-header"><span class="cat-icon">🏗️</span><span class="cat-title">Infrastructure — 基础设施层</span></div>
-  <div class="cat-desc">AI 的底座。从自研芯片到模型训练平台，提供构建和运行 AI 所需的一切计算、存储和数据基础设施。</div>
+  <div class="cat-header"><span class="cat-icon">🛸</span><span class="cat-title">Frontier Agents — 前沿智能体</span></div>
+  <div class="cat-desc">新一代自主 AI Agent，能独立工作数小时甚至数天，无需持续人工干预。代表 AI 从"工具"到"队友"的进化。</div>
 
-  <div class="sub-label">AI COMPUTE · AI 计算</div>
-  <div class="prod-grid" style="margin-bottom:32px;">
-    <div class="prod-card">
-      <div class="prod-name">AWS Trainium <span class="badge">自研芯片</span></div>
-      <div class="prod-desc">AWS 自研 AI 训练芯片，专为大规模模型训练优化。Trainium2 提供比上一代 4 倍的训练性能，支持万亿参数模型训练。</div>
-      <div class="prod-scene"><strong>场景：</strong>大模型预训练、微调，替代 NVIDIA GPU 降低训练成本 40%+</div>
-      <div class="prod-compare">同类：NVIDIA H100/H200, Google TPU v5</div>
-    </div>
-    <div class="prod-card">
-      <div class="prod-name">AWS Inferentia</div>
-      <div class="prod-desc">AI 推理专用芯片，为模型推理提供高吞吐、低延迟、低成本的计算。Inferentia2 支持 LLM 推理，性价比领先。</div>
-      <div class="prod-scene"><strong>场景：</strong>生产环境模型推理部署，实时 API 服务，降低推理成本 50%+</div>
-      <div class="prod-compare">同类：NVIDIA T4/L4, Google TPU Inference</div>
-    </div>
-    <div class="prod-card">
-      <div class="prod-name">GPU 实例（P5/P4）</div>
-      <div class="prod-desc">基于 NVIDIA GPU 的 EC2 实例，P5 搭载 H100，适合需要 CUDA 生态的 AI 工作负载。</div>
-      <div class="prod-scene"><strong>场景：</strong>需要 NVIDIA CUDA 生态的训练和推理，HPC 计算</div>
-      <div class="prod-compare">同类：Azure NDm A100, GCP A3 (H100)</div>
-    </div>
-  </div>
-
-  <div class="sub-label">AMAZON SAGEMAKER · 模型构建与数据基础</div>
   <div class="prod-grid">
     <div class="prod-card">
-      <div class="prod-name">SageMaker — 模型构建</div>
-      <div class="prod-desc">端到端的机器学习平台，涵盖模型构建（Model Building）、训练（Training）、部署（Deployment）全流程。</div>
-      <div class="prod-scene"><strong>场景：</strong>自定义模型开发，从数据准备到模型上线的完整 ML 工作流</div>
-      <div class="prod-compare">同类：Google Vertex AI, Azure ML Studio</div>
+      <div class="prod-name">Kiro Autonomous Agent <span class="badge">NEW</span></div>
+      <div class="prod-desc">你的虚拟开发者。能维持跨仓库的深度上下文，学习团队的编码风格，独立完成复杂的开发任务——从 bug 修复到功能开发，可以连续工作数天。</div>
+      <div class="prod-scene"><strong>场景：</strong>复杂 bug 修复、跨仓库重构、功能开发、技术债清理</div>
+      <div class="prod-compare">同类：Devin, OpenAI Codex Agent, Claude Code</div>
     </div>
     <div class="prod-card">
-      <div class="prod-name">SageMaker HyperPod</div>
-      <div class="prod-desc">大规模分布式训练集群，自动故障恢复，支持数千 GPU/Trainium 芯片的并行训练。</div>
-      <div class="prod-scene"><strong>场景：</strong>基础模型预训练，需要数百到数千 GPU 的大规模训练任务</div>
-      <div class="prod-compare">同类：Azure AI Infrastructure, GCP ML Hub</div>
+      <div class="prod-name">AWS DevOps Agent <span class="badge">NEW</span></div>
+      <div class="prod-desc">自主运维 Agent，持续监控应用健康状态，自动检测异常、诊断根因、执行修复。将被动告警响应转变为主动问题预防。</div>
+      <div class="prod-scene"><strong>场景：</strong>7×24 自动化运维、故障自愈、性能优化、变更管理</div>
+      <div class="prod-compare">同类：PagerDuty AIOps, Datadog AI Agent</div>
     </div>
     <div class="prod-card">
-      <div class="prod-name">SageMaker MLOps</div>
-      <div class="prod-desc">模型生命周期管理，包括模型注册、版本控制、A/B 测试、自动化部署流水线。</div>
-      <div class="prod-scene"><strong>场景：</strong>企业级 ML 模型的持续集成和持续部署（CI/CD for ML）</div>
-      <div class="prod-compare">同类：MLflow, Kubeflow, Weights & Biases</div>
-    </div>
-    <div class="prod-card">
-      <div class="prod-name">数据基础设施</div>
-      <div class="prod-desc">涵盖数据处理（Data Processing）、治理（Governance）、存储与数据库（Storage & Databases）、向量搜索（Vector Search）。</div>
-      <div class="prod-scene"><strong>场景：</strong>RAG 应用的向量数据库、数据湖构建、数据质量治理</div>
-      <div class="prod-compare">同类：Databricks, Snowflake, Pinecone</div>
+      <div class="prod-name">AWS Security Agent <span class="badge">NEW</span></div>
+      <div class="prod-desc">自主安全测试 Agent，能理解应用架构和源代码，自动执行渗透测试、发现漏洞、验证风险。将定期安全测试转变为持续安全验证。</div>
+      <div class="prod-scene"><strong>场景：</strong>持续渗透测试、漏洞扫描、安全合规验证、代码安全审查</div>
+      <div class="prod-compare">同类：Snyk AI, Wiz AI Agent</div>
     </div>
   </div>
 </div>
 
-<!-- ===== 2. AI & AGENT DEVELOPMENT SOFTWARE & SERVICES ===== -->
+<!-- ===== 3. APPLICATIONS AND AGENTS ===== -->
+<div class="cat-section">
+  <div class="cat-header"><span class="cat-icon">🚀</span><span class="cat-title">Applications & Agents — 应用与智能体</span></div>
+  <div class="cat-desc">开箱即用的 AI 应用和工具，面向开发者、业务用户和企业，直接解决实际问题。</div>
+
+  <div class="prod-grid">
+    <div class="prod-card">
+      <div class="prod-name">Kiro <span class="badge">IDE</span></div>
+      <div class="prod-desc">AI 驱动的开发环境，基于 Code OSS。内置 Spec 驱动开发、Steering 文件、MCP 集成、自定义 Agent。支持 Vibe Coding 和结构化开发两种模式。</div>
+      <div class="prod-scene"><strong>场景：</strong>日常编码、代码审查、架构设计、项目脚手架生成</div>
+      <div class="prod-compare">同类：Cursor, Windsurf, GitHub Copilot Workspace</div>
+    </div>
+    <div class="prod-card">
+      <div class="prod-name">Amazon Quick Suite</div>
+      <div class="prod-desc">从 QuickSight 进化而来的 AI 驱动商业智能平台。集成 AI Agent 进行数据分析、深度研究、自动化报告，用自然语言查询数据。</div>
+      <div class="prod-scene"><strong>场景：</strong>业务数据分析、管理层仪表盘、自动化报告生成</div>
+      <div class="prod-compare">同类：Power BI + Copilot, Tableau + Einstein</div>
+    </div>
+    <div class="prod-card">
+      <div class="prod-name">AWS Transform</div>
+      <div class="prod-desc">AI 驱动的应用现代化服务。部署专业 AI Agent 自动完成代码分析、重构、语言翻译、框架迁移，将项目时间缩短 80%+。</div>
+      <div class="prod-scene"><strong>场景：</strong>Java 版本升级、.NET 到 Linux 迁移、单体应用拆分微服务</div>
+      <div class="prod-compare">同类：Google Gemini Code Assist (migration), 无直接竞品</div>
+    </div>
+    <div class="prod-card">
+      <div class="prod-name">Amazon Connect</div>
+      <div class="prod-desc">AI 驱动的云联络中心，集成自然语言理解、实时语音分析、智能路由、Agent 辅助。</div>
+      <div class="prod-scene"><strong>场景：</strong>客服中心智能化、语音 IVR、实时通话分析和质检</div>
+      <div class="prod-compare">同类：Genesys Cloud, Five9, Twilio Flex</div>
+    </div>
+    <div class="prod-card">
+      <div class="prod-name">AWS Marketplace（AI）</div>
+      <div class="prod-desc">AI 模型和应用的市场，提供数百个预训练模型、SaaS 应用和数据集，一键部署到你的 AWS 环境。</div>
+      <div class="prod-scene"><strong>场景：</strong>快速获取第三方 AI 模型、评估不同供应商方案</div>
+      <div class="prod-compare">同类：Azure Marketplace, Hugging Face Hub</div>
+    </div>
+  </div>
+</div><!-- ===== 2. AI & AGENT DEVELOPMENT SOFTWARE & SERVICES ===== -->
 <div class="cat-section">
   <div class="cat-header"><span class="cat-icon">🧠</span><span class="cat-title">AI & Agent Development — AI 与智能体开发</span></div>
   <div class="cat-desc">构建 AI 应用和智能体的核心平台。从基础模型到 Agent 框架，从知识库到安全护栏，一站式开发。</div>
@@ -213,70 +221,58 @@
       <div class="prod-compare">同类：Ragas, DeepEval</div>
     </div>
   </div>
-</div>
-
-<!-- ===== 3. APPLICATIONS AND AGENTS ===== -->
+</div><!-- ===== 1. INFRASTRUCTURE ===== -->
 <div class="cat-section">
-  <div class="cat-header"><span class="cat-icon">🚀</span><span class="cat-title">Applications & Agents — 应用与智能体</span></div>
-  <div class="cat-desc">开箱即用的 AI 应用和工具，面向开发者、业务用户和企业，直接解决实际问题。</div>
+  <div class="cat-header"><span class="cat-icon">🏗️</span><span class="cat-title">Infrastructure — 基础设施层</span></div>
+  <div class="cat-desc">AI 的底座。从自研芯片到模型训练平台，提供构建和运行 AI 所需的一切计算、存储和数据基础设施。</div>
 
-  <div class="prod-grid">
+  <div class="sub-label">AI COMPUTE · AI 计算</div>
+  <div class="prod-grid" style="margin-bottom:32px;">
     <div class="prod-card">
-      <div class="prod-name">Kiro <span class="badge">IDE</span></div>
-      <div class="prod-desc">AI 驱动的开发环境，基于 Code OSS。内置 Spec 驱动开发、Steering 文件、MCP 集成、自定义 Agent。支持 Vibe Coding 和结构化开发两种模式。</div>
-      <div class="prod-scene"><strong>场景：</strong>日常编码、代码审查、架构设计、项目脚手架生成</div>
-      <div class="prod-compare">同类：Cursor, Windsurf, GitHub Copilot Workspace</div>
+      <div class="prod-name">AWS Trainium <span class="badge">自研芯片</span></div>
+      <div class="prod-desc">AWS 自研 AI 训练芯片，专为大规模模型训练优化。Trainium2 提供比上一代 4 倍的训练性能，支持万亿参数模型训练。</div>
+      <div class="prod-scene"><strong>场景：</strong>大模型预训练、微调，替代 NVIDIA GPU 降低训练成本 40%+</div>
+      <div class="prod-compare">同类：NVIDIA H100/H200, Google TPU v5</div>
     </div>
     <div class="prod-card">
-      <div class="prod-name">Amazon Quick Suite</div>
-      <div class="prod-desc">从 QuickSight 进化而来的 AI 驱动商业智能平台。集成 AI Agent 进行数据分析、深度研究、自动化报告，用自然语言查询数据。</div>
-      <div class="prod-scene"><strong>场景：</strong>业务数据分析、管理层仪表盘、自动化报告生成</div>
-      <div class="prod-compare">同类：Power BI + Copilot, Tableau + Einstein</div>
+      <div class="prod-name">AWS Inferentia</div>
+      <div class="prod-desc">AI 推理专用芯片，为模型推理提供高吞吐、低延迟、低成本的计算。Inferentia2 支持 LLM 推理，性价比领先。</div>
+      <div class="prod-scene"><strong>场景：</strong>生产环境模型推理部署，实时 API 服务，降低推理成本 50%+</div>
+      <div class="prod-compare">同类：NVIDIA T4/L4, Google TPU Inference</div>
     </div>
     <div class="prod-card">
-      <div class="prod-name">AWS Transform</div>
-      <div class="prod-desc">AI 驱动的应用现代化服务。部署专业 AI Agent 自动完成代码分析、重构、语言翻译、框架迁移，将项目时间缩短 80%+。</div>
-      <div class="prod-scene"><strong>场景：</strong>Java 版本升级、.NET 到 Linux 迁移、单体应用拆分微服务</div>
-      <div class="prod-compare">同类：Google Gemini Code Assist (migration), 无直接竞品</div>
-    </div>
-    <div class="prod-card">
-      <div class="prod-name">Amazon Connect</div>
-      <div class="prod-desc">AI 驱动的云联络中心，集成自然语言理解、实时语音分析、智能路由、Agent 辅助。</div>
-      <div class="prod-scene"><strong>场景：</strong>客服中心智能化、语音 IVR、实时通话分析和质检</div>
-      <div class="prod-compare">同类：Genesys Cloud, Five9, Twilio Flex</div>
-    </div>
-    <div class="prod-card">
-      <div class="prod-name">AWS Marketplace（AI）</div>
-      <div class="prod-desc">AI 模型和应用的市场，提供数百个预训练模型、SaaS 应用和数据集，一键部署到你的 AWS 环境。</div>
-      <div class="prod-scene"><strong>场景：</strong>快速获取第三方 AI 模型、评估不同供应商方案</div>
-      <div class="prod-compare">同类：Azure Marketplace, Hugging Face Hub</div>
+      <div class="prod-name">GPU 实例（P5/P4）</div>
+      <div class="prod-desc">基于 NVIDIA GPU 的 EC2 实例，P5 搭载 H100，适合需要 CUDA 生态的 AI 工作负载。</div>
+      <div class="prod-scene"><strong>场景：</strong>需要 NVIDIA CUDA 生态的训练和推理，HPC 计算</div>
+      <div class="prod-compare">同类：Azure NDm A100, GCP A3 (H100)</div>
     </div>
   </div>
-</div>
 
-<!-- ===== 4. FRONTIER AGENTS ===== -->
-<div class="cat-section">
-  <div class="cat-header"><span class="cat-icon">🛸</span><span class="cat-title">Frontier Agents — 前沿智能体</span></div>
-  <div class="cat-desc">新一代自主 AI Agent，能独立工作数小时甚至数天，无需持续人工干预。代表 AI 从"工具"到"队友"的进化。</div>
-
+  <div class="sub-label">AMAZON SAGEMAKER · 模型构建与数据基础</div>
   <div class="prod-grid">
     <div class="prod-card">
-      <div class="prod-name">Kiro Autonomous Agent <span class="badge">NEW</span></div>
-      <div class="prod-desc">你的虚拟开发者。能维持跨仓库的深度上下文，学习团队的编码风格，独立完成复杂的开发任务——从 bug 修复到功能开发，可以连续工作数天。</div>
-      <div class="prod-scene"><strong>场景：</strong>复杂 bug 修复、跨仓库重构、功能开发、技术债清理</div>
-      <div class="prod-compare">同类：Devin, OpenAI Codex Agent, Claude Code</div>
+      <div class="prod-name">SageMaker — 模型构建</div>
+      <div class="prod-desc">端到端的机器学习平台，涵盖模型构建（Model Building）、训练（Training）、部署（Deployment）全流程。</div>
+      <div class="prod-scene"><strong>场景：</strong>自定义模型开发，从数据准备到模型上线的完整 ML 工作流</div>
+      <div class="prod-compare">同类：Google Vertex AI, Azure ML Studio</div>
     </div>
     <div class="prod-card">
-      <div class="prod-name">AWS DevOps Agent <span class="badge">NEW</span></div>
-      <div class="prod-desc">自主运维 Agent，持续监控应用健康状态，自动检测异常、诊断根因、执行修复。将被动告警响应转变为主动问题预防。</div>
-      <div class="prod-scene"><strong>场景：</strong>7×24 自动化运维、故障自愈、性能优化、变更管理</div>
-      <div class="prod-compare">同类：PagerDuty AIOps, Datadog AI Agent</div>
+      <div class="prod-name">SageMaker HyperPod</div>
+      <div class="prod-desc">大规模分布式训练集群，自动故障恢复，支持数千 GPU/Trainium 芯片的并行训练。</div>
+      <div class="prod-scene"><strong>场景：</strong>基础模型预训练，需要数百到数千 GPU 的大规模训练任务</div>
+      <div class="prod-compare">同类：Azure AI Infrastructure, GCP ML Hub</div>
     </div>
     <div class="prod-card">
-      <div class="prod-name">AWS Security Agent <span class="badge">NEW</span></div>
-      <div class="prod-desc">自主安全测试 Agent，能理解应用架构和源代码，自动执行渗透测试、发现漏洞、验证风险。将定期安全测试转变为持续安全验证。</div>
-      <div class="prod-scene"><strong>场景：</strong>持续渗透测试、漏洞扫描、安全合规验证、代码安全审查</div>
-      <div class="prod-compare">同类：Snyk AI, Wiz AI Agent</div>
+      <div class="prod-name">SageMaker MLOps</div>
+      <div class="prod-desc">模型生命周期管理，包括模型注册、版本控制、A/B 测试、自动化部署流水线。</div>
+      <div class="prod-scene"><strong>场景：</strong>企业级 ML 模型的持续集成和持续部署（CI/CD for ML）</div>
+      <div class="prod-compare">同类：MLflow, Kubeflow, Weights & Biases</div>
+    </div>
+    <div class="prod-card">
+      <div class="prod-name">数据基础设施</div>
+      <div class="prod-desc">涵盖数据处理（Data Processing）、治理（Governance）、存储与数据库（Storage & Databases）、向量搜索（Vector Search）。</div>
+      <div class="prod-scene"><strong>场景：</strong>RAG 应用的向量数据库、数据湖构建、数据质量治理</div>
+      <div class="prod-compare">同类：Databricks, Snowflake, Pinecone</div>
     </div>
   </div>
 </div>
